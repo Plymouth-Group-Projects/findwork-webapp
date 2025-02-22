@@ -1,0 +1,11 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: webapp-docker
+    container_name: webapp-docker
+    ports:
+      - "8080:3000"
+    environment:
+      - NODE_ENV=production
