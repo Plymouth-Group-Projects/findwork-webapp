@@ -17,7 +17,7 @@ export default function HeroSection() {
 	);
 	return (
 		<>
-			<div className="container mx-auto max-w-[380px] sm:max-w-[680px] lg:max-w-[930px] xl:max-w-[1440px] my-[60px]">
+			<div className="container mx-auto max-w-[380px] sm:max-w-[680px] lg:max-w-[930px] xl:max-w-[1440px] my-[60px] mt-32">
 				<div className="grid lg:grid-cols-2 grid-cols-1 xl:gap-8 gap-4 ">
 					<div className="flex flex-col text-center lg:text-left items-center lg:items-start">
 						<h1 className="xl:text-6xl sm:text-5xl text-4xl font-bebas tracking-wide">
