@@ -35,7 +35,7 @@ export default function NavBar() {
 									<NavigationMenuItem>
 										<a href="./">
 											<Image
-												src="/finalized-logo.svg"
+												src="./finalized-logo.svg"
 												alt="logo"
 												width={210}
 												height={210}
@@ -178,7 +178,7 @@ export default function NavBar() {
 									<div className="scale-[115%] sm:scale-105">
 										<a href="./">
 											<Image
-												src="/finalized-logo.svg"
+												src="./finalized-logo.svg"
 												alt="logo"
 												width={200}
 												height={200}
