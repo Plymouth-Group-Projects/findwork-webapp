@@ -48,7 +48,7 @@ export default function HeroSection() {
 							<CarouselContent className="sm:pl-10 gap-4">
 								<CarouselItem>
 									<Image
-										src="/carousel-photo1.png"
+										src="./carousel-photo1.png"
 										alt="Carousel Photo 1"
 										width={600}
 										height={600}
@@ -56,7 +56,7 @@ export default function HeroSection() {
 								</CarouselItem>
 								<CarouselItem>
 									<Image
-										src="/carousel-photo2.png"
+										src="./carousel-photo2.png"
 										alt="Carousel Photo 2"
 										width={600}
 										height={600}
@@ -64,7 +64,7 @@ export default function HeroSection() {
 								</CarouselItem>
 								<CarouselItem>
 									<Image
-										src="/carousel-photo3.png"
+										src="./carousel-photo3.png"
 										alt="Carousel Photo 3"
 										width={600}
 										height={600}
