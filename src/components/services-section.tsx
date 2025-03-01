@@ -88,7 +88,7 @@ export default function Services() {
 		<>
 			<div>
 				<div className="container mx-auto max-w-[1400px]">
-					<h2 className="text-center tracking-widest text-4xl font-semibold font-lato mt-36 mb-10">
+					<h2 className="text-center tracking-widest text-4xl font-semibold font-lato mt-20 mb-10">
 						TOP FEATURED SERVICES
 					</h2>
 				</div>
@@ -118,17 +118,18 @@ export default function Services() {
 											}
                     `}
 									>
-										<CardHeader>
+										<CardHeader className="p-0 relative h-[250px] overflow-hidden rounded-t-lg">
 											<Image
 												src={service.imageurl}
 												alt={service.title}
-												width={1000}
-												height={70}
-												className="rounded-lg"
+												fill={true}
+												className="object-cover object-center"
+												sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+												priority
 											/>
 										</CardHeader>
 										<CardContent>
-											<CardTitle className="text-xl font-semibold font-lato mb-2">
+											<CardTitle className="text-xl font-semibold font-lato mt-5 mb-3">
 												{service.title}
 											</CardTitle>
 											<CardDescription className="text-base text-justify">

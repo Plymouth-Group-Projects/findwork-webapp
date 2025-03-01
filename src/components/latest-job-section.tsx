@@ -160,7 +160,7 @@ export default function LatestJobSection() {
 								<div className="p-1">
 									<Card
 										className={`
-                      h-[380px] bg-white border-none text-darker
+                      h-[400px] bg-white border-none text-darker
                       transition-all duration-300 ease-in-out grid grid-cols-6
                       ${
 												activeIndex === index

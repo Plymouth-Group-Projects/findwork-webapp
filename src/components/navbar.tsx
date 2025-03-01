@@ -194,7 +194,7 @@ export default function NavBar() {
 											<NavigationMenuLink
 												className={navigationMenuTriggerStyle()}
 											>
-												<Button className="bg-light font-lato tracking-wider scale-[70%] md:scale-95 mt-1 hover:bg-lightest hover:text-darker">
+												<Button className="bg-light font-lato tracking-wider scale-[80%] md:scale-95 mt-1 hover:bg-lightest hover:text-darker">
 													Login
 												</Button>
 											</NavigationMenuLink>
