@@ -25,7 +25,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" className="dark:bg-darker dark:text-white">
+		<html lang="en" className="bg-darker text-white">
 			<body className={`${bebasNeue.variable} ${lato.variable} antialiased`}>
 				<NavBar />
 				{children}
