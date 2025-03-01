@@ -3,8 +3,6 @@ name: Docker Image CI/CD
 on:
   push:
     branches: [ "release/development" ]
-  pull_request:
-    branches: [ "release/development" ]
     
 permissions:
   packages: write
