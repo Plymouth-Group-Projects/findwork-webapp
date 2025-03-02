@@ -44,7 +44,10 @@ export default function HeroSection() {
 						</div>
 					</div>
 					<div className=" hidden lg:block container my-[60px] xl:my-0">
-						<Carousel plugins={[plugin.current]} className="w-full scale-105 gap-0">
+						<Carousel
+							plugins={[plugin.current]}
+							className="w-full scale-105 gap-0"
+						>
 							<CarouselContent className="sm:pl-10 gap-4">
 								<CarouselItem>
 									<Image
