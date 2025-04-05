@@ -45,13 +45,10 @@ export default function NavBar() {
       )}
       <div ref={navRef} className="bg-darkest py-4 z-50 fixed w-full shadow top-0">
         <div className="container mx-auto xl:max-w-[1440px] lg:max-w-[930px]">
-          {/* Desktop Menu */}
           <div className="hidden lg:block">
             <NavigationMenu>
               <NavigationMenuList className="container">
-                {/* Desktop menu layout */}
                 <div className="grid grid-cols-3">
-                  {/* Logo */}
                   <div className="flex items-start my-2 lg:ms-[9px] xl:ms-8 lg:scale-90 xl:scale-100 col-span-1">
                     <NavigationMenuItem>
                       <a href="./">
@@ -65,7 +62,6 @@ export default function NavBar() {
                     </NavigationMenuItem>
                   </div>
                   
-                  {/* Navigation links */}
                   <div className="flex justify-center lg:ms-10 lg:scale-95 xl:scale-100 lg:space-x-[-5px] xl:space-x-1 col-span-1">
                     <NavigationMenuItem className="hover:opacity-80">
                       <Link href="./" legacyBehavior passHref>
@@ -114,7 +110,6 @@ export default function NavBar() {
                     </NavigationMenuItem>
                   </div>
                   
-                  {/* Login button */}
                   <div className="flex justify-end xl:me-10 lg:scale-90 xl:scale-100 col-span-1">
                     <NavigationMenuItem>
                       <Link href="/docs" legacyBehavior passHref>
@@ -133,10 +128,8 @@ export default function NavBar() {
             </NavigationMenu>
           </div>
           
-          {/* Mobile Menu */}
           <div className="lg:hidden">
             <div className="grid grid-cols-5 md:space-x-10">
-              {/* Hamburger Menu Button */}
               <div className="flex items-start justify-start">
                 <Button
                   className="p-2 scale-125 outline-none z-50"
