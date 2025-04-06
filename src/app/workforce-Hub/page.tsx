@@ -2,9 +2,7 @@ import { FaSearch } from "react-icons/fa";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import App from "next/app";
 import { AppSidebar } from "@/components/workforcehub-sidebar";
 
 export default function WorkForceHub() {
