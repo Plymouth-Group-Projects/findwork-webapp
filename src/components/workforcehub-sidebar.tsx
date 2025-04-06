@@ -9,7 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Dispatch, SetStateAction } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -29,7 +29,7 @@ export function AppSidebar() {
     setIsMounted(true)
   }, [])
 
-  const toggleValue = (value: string, list: string[], setList: any) => {
+  const toggleValue = (value: string, list: string[], setList: Dispatch<SetStateAction<string[]>>) => {
     if (list.includes(value)) {
       setList(list.filter((v) => v !== value))
     } else {

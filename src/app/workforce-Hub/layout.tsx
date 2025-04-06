@@ -1,6 +1,5 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
-import { Bebas_Neue, Lato } from "next/font/google";
 import { AppSidebar } from "@/components/workforcehub-sidebar";
 
 export const metadata: Metadata = {
