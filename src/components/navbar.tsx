@@ -52,8 +52,8 @@ export default function NavBar() {
                   <div className="flex items-start my-2 lg:ms-[9px] xl:ms-8 lg:scale-90 xl:scale-100 col-span-1">
                     <NavigationMenuItem>
                       <a href="./">
-                        <Image
-                          src="./finalized-logo.svg"
+                        <img
+                          src="https://axyo18gsui.ufs.sh/f/HqrudRjOwkINg6FRtEfX9XmxVlQTfdAFZ20wL6pI75MDHaNt"
                           alt="logo"
                           width={210}
                           height={210}
