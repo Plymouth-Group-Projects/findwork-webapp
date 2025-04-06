@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import App from "next/app";
+import { AppSidebar } from "@/components/workforcehub-sidebar";
 
 export default function WorkForceHub() {
   const employees = [
@@ -31,23 +33,8 @@ export default function WorkForceHub() {
   ];
 
   return (
-    <div className="flex  pt-[60px] min-h-screen bg-[#1E1E1E] text-white">
-      {/* Sidebar */}
-      <aside className="w-1/4 bg-white text-black p-6 rounded-md">
-        <h2 className="text-2xl font-bold mb-4">FINDWORK</h2>
-        <div>
-          <h3 className="font-semibold">Type of Employment</h3>
-          <ul className="text-sm mt-2 space-y-2">
-            <li><Checkbox /> Full Time Jobs</li>
-            <li><Checkbox /> Part Time Jobs</li>
-            <li><Checkbox /> Freelancing Jobs</li>
-            <li><Checkbox /> On-Time Jobs</li>
-            <li><Checkbox /> Contract</li>
-          </ul>
-        </div>
-      </aside>
-
-      {/* Main Content */}
+    <div className="container mx-auto flex flex-col md:flex-row h-screen">
+      <AppSidebar/>
       <main className="flex-1 p-10">
         {/* Search Bar */}
         <div className="flex space-x-4 mb-6">
