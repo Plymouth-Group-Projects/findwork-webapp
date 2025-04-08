@@ -51,7 +51,7 @@ export default function NavBar() {
                 <div className="grid grid-cols-3">
                   <div className="flex items-start my-2 lg:ms-[9px] xl:ms-8 lg:scale-90 xl:scale-100 col-span-1">
                     <NavigationMenuItem>
-                      <a href="./">
+                      <a href="../">
                         <img
                           src="https://axyo18gsui.ufs.sh/f/HqrudRjOwkINg6FRtEfX9XmxVlQTfdAFZ20wL6pI75MDHaNt"
                           alt="logo"
@@ -64,7 +64,7 @@ export default function NavBar() {
                   
                   <div className="flex justify-center lg:ms-10 lg:scale-95 xl:scale-100 lg:space-x-[-5px] xl:space-x-1 col-span-1">
                     <NavigationMenuItem className="hover:opacity-80">
-                      <Link href="./" legacyBehavior passHref>
+                      <Link href="../" legacyBehavior passHref>
                         <NavigationMenuLink
                           className={navigationMenuTriggerStyle()}
                         >
@@ -73,7 +73,7 @@ export default function NavBar() {
                       </Link>
                     </NavigationMenuItem>
                     <NavigationMenuItem className="hover:opacity-80">
-                      <Link href="/docs" legacyBehavior passHref>
+                      <Link href="/job-hub" legacyBehavior passHref>
                         <NavigationMenuLink
                           className={navigationMenuTriggerStyle()}
                         >
@@ -82,7 +82,7 @@ export default function NavBar() {
                       </Link>
                     </NavigationMenuItem>
                     <NavigationMenuItem className="hover:opacity-80">
-                      <Link href="/docs" legacyBehavior passHref>
+                      <Link href="/workforce-hub" legacyBehavior passHref>
                         <NavigationMenuLink
                           className={navigationMenuTriggerStyle()}
                         >
@@ -112,7 +112,7 @@ export default function NavBar() {
                   
                   <div className="flex justify-end xl:me-10 lg:scale-90 xl:scale-100 col-span-1">
                     <NavigationMenuItem>
-                      <Link href="/docs" legacyBehavior passHref>
+                      <Link href="/auth/login" legacyBehavior passHref>
                         <NavigationMenuLink
                           className={navigationMenuTriggerStyle()}
                         >
