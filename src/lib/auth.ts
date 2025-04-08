@@ -37,9 +37,8 @@ export const authOptions: NextAuthOptions = {
         // Connect to DB when needed - important for serverless
         await ConnectToDatabase();
         
-        // Add proper type assertion for the lean document
         const user = await User.findOne({ email: credentials.email  }).lean() as (
-          { _id: any; name: string; email: string; password: string } | null
+          { _id: object; name: string; email: string; password: string } | null
         );
         
         if (!user) {
