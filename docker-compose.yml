@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   app:
     build:
@@ -6,6 +8,45 @@ services:
     image: webapp-docker
     container_name: webapp-docker
     ports:
-      - "8080:3000"
+      - "${PORT:-8080}:${PORT_PRODUCTION:-3000}"
+    env_file:
+      - .env
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${PORT_PRODUCTION:-8080}
+      - PORT_DEVELOPMENT=${PORT_DEVELOPMENT:-3000}
+      - PORT_PRODUCTION=${PORT_PRODUCTION:-8080}
+      - MONGODB_URL=${MONGODB_URL}
+      - MONGODB_DB=${MONGODB_DB}
+      - JWT_SECRET=${JWT_SECRET}
+      - NEXTAUTH_URL=http://localhost:${PORT_PRODUCTION:-8080}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXT_PUBLIC_API_URL=http://localhost:${PORT_PRODUCTION:-8080}/api
+    depends_on:
+      - db
+    networks:
+      - app-network
+  
+  db:
+    image: mongo:latest
+    container_name: mongo-docker
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME:-root}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD:-example}
+      - MONGO_INITDB_DATABASE=${MONGODB_DB:-findworkDB}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
