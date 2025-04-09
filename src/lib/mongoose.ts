@@ -1,31 +1,63 @@
 "use server";
 
 import mongoose from 'mongoose';
+import { networkInterfaces } from 'os';
 
-// Define the interface for our cached connection
 interface MongooseConnection {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
 }
 
-// Extend the NodeJS global namespace to include our mongoose property
 declare global {
   // eslint-disable-next-line no-var
   var mongoose: MongooseConnection | undefined;
 }
 
-// Fix connection string format - the double @ symbol is causing issues
 const MONGODB_URI = process.env.MONGODB_URL || '';
+const MONGODB_DB = process.env.MONGODB_DB || 'findworkDB';
+const MONGODB_ALLOWED_IP = process.env.MONGODB_ALLOWED_IP || '';
 
 if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URL environment variable');
 }
 
-/**
- * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections growing exponentially
- * during API Route usage.
- */
+if (!MONGODB_ALLOWED_IP) {
+  console.warn('MONGODB_ALLOWED_IP not defined. IP restriction will not be enforced.');
+}
+
+// Function to check if current IP is allowed
+function isAllowedIP(): boolean {
+  if (!MONGODB_ALLOWED_IP) return true; // If no IP restriction is set, allow all
+
+  // Get all network interfaces
+  const nets = networkInterfaces();
+  const ips: string[] = [];
+
+  // Collect all IPs from network interfaces
+  Object.values(nets).forEach(net => {
+    if (net) {
+      net.forEach(interface_ => {
+        if (interface_.family === 'IPv4' && !interface_.internal) {
+          ips.push(interface_.address);
+        }
+      });
+    }
+  });
+
+  // Check if any of the machine's IPs match the allowed IP
+  const isAllowed = MONGODB_ALLOWED_IP === '*' || 
+                    ips.includes(MONGODB_ALLOWED_IP) || 
+                    MONGODB_ALLOWED_IP.split(',').some(ip => ips.includes(ip.trim()));
+  
+  if (!isAllowed) {
+    console.warn(`Current IP is not in the allowed list. Allowed IPs: ${MONGODB_ALLOWED_IP}`);
+  }
+  
+  return isAllowed;
+}
+
+console.log(`Attempting to connect to database: ${MONGODB_DB}`);
+
 const cached: MongooseConnection = global.mongoose || { conn: null, promise: null };
 
 // Initialize the global mongoose object if it doesn't exist
@@ -33,27 +65,45 @@ if (!global.mongoose) {
   global.mongoose = cached;
 }
 
-/**
- * Creates a connection to MongoDB using Mongoose
- * Leverages connection caching for serverless environment
- */
 export async function ConnectToDatabase() {
   if (cached.conn) {
     return cached.conn;
   }
 
+  // Check IP before attempting connection
+  if (!isAllowedIP()) {
+    throw new Error('Current IP address is not allowed to connect to MongoDB');
+  }
+
   if (!cached.promise) {
+    const mongoURI = new URL(MONGODB_URI);
+
+    mongoURI.pathname = '';
+    
     const opts = {
       bufferCommands: true,
+      dbName: MONGODB_DB,
+      serverSelectionTimeoutMS: 5000,
+      maxPoolSize: 10,
+      minPoolSize: 1,
+      socketTimeoutMS: 45000,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts)
+    cached.promise = mongoose.connect(mongoURI.toString(), opts)
       .then((mongoose) => {
-        console.log('MongoDB connection established');
+        // Verify the connected database name
+        const dbName = mongoose.connection.db?.databaseName || MONGODB_DB;
+        console.log(`MongoDB connection established to ${dbName}`);
+        
+        if (dbName !== MONGODB_DB) {
+          console.warn(`Warning: Connected to ${dbName} instead of ${MONGODB_DB}`);
+        }
+        
         return mongoose;
       })
       .catch((error) => {
         console.error('MongoDB connection error:', error);
+        cached.promise = null; // Reset on error
         throw error;
       });
   }
@@ -61,25 +111,18 @@ export async function ConnectToDatabase() {
   try {
     cached.conn = await cached.promise;
   } catch (e) {
-    cached.promise = null;
+    cached.promise = null; // Reset the promise on failure
     throw e;
   }
 
-  return cached.conn;
+  return cached.conn; // Return the established connection
 }
 
-/**
- * Disconnect from MongoDB
- * Useful for cleanup during testing
- */
 export async function disconnectFromDatabase() {
   if (cached.conn) {
-    await mongoose.disconnect();
-    cached.conn = null;
-    cached.promise = null;
+    await mongoose.disconnect(); // Disconnect from MongoDB
+    cached.conn = null; // Reset cached connection
+    cached.promise = null; // Reset cached promise
     console.log('Disconnected from MongoDB');
   }
 }
-
-// Export mongoose to be used elsewhere in the application
-export { mongoose };
