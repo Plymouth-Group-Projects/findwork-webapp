@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { FaGoogle, FaFacebook, FaEye, FaEyeSlash, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaGoogle, FaEye, FaEyeSlash, FaCheck, FaTimes, FaMicrosoft } from 'react-icons/fa';
 
 import { registerSchema, type RegisterFormValues } from '@/lib/validations/auth';
 import { toast } from '@/hooks/use-toast';
@@ -36,7 +36,7 @@ export function RegisterForm() {
       password: '',
       confirmPassword: '',
     },
-    mode: 'onChange', // Validate on change for immediate feedback
+    mode: 'onChange',
   });
   
   // Monitor password strength
@@ -109,26 +109,26 @@ export function RegisterForm() {
     }
   }
 
-  const handleOAuthSignIn = (provider: 'google' | 'facebook') => {
+  const handleOAuthSignIn = (provider: 'google' | 'azure-ad') => {
     setIsLoading(true);
     signIn(provider, { callbackUrl: '/dashboard' });
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="rounded-md shadow-md w-full max-w-5xl mx-auto p-0 overflow-hidden">
-        <div className="grid grid-cols-1 md:grid-cols-2">
-          <div className="hidden md:flex flex-col justify-center items-center bg-blue-900 text-white p-10">
-            <h2 className="text-3xl font-semibold mb-4">Find Jobs, Hire Talent—Fast, Easy And Reliable.</h2>
+      <Card className="rounded-md bg-white text-darker w-full max-w-[1100px] mx-auto p-0 border-none overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-5">
+          <div className="hidden md:flex col-span-2 flex-col bg-lightest text-white p-10">
+            <h2 className="text-3xl font-semibold my-4 text-darker">Find Jobs,<br/> Hire Talent—Fast, <br/> Easy And Reliable.</h2>
             <p className="text-lg font-bold">Start Today!</p>
-            <div className="mt-10">
-              <img src="/phone-illustration.svg" alt="Phone illustration" className="w-48" />
+            <div className="mt-20 items-center flex justify-center">
+              <img src="/register-vector.svg" alt="Phone illustration" className="w-5/6" />
             </div>
           </div>
           
-          <div className="p-4">
+          <div className="p-4 md:col-span-3">
             <CardHeader>
-              <CardTitle className="text-xl md:text-2xl text-center">Start Your Career Journey With Us, <br /> <span className="text-primary">REGISTER NOW</span></CardTitle>
+              <CardTitle className="text-xl md:text-2xl text-center">Start Your Career Journey With Us,<br/> <span className="text-primary">REGISTER NOW</span></CardTitle>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -155,7 +155,8 @@ export function RegisterForm() {
                         <FormLabel>Phone Number</FormLabel>
                         <FormControl>
                           <Input 
-                            placeholder="XXX-XXX-XXXX" 
+                            placeholder="Enter your Phone Number"
+                            type="tel" 
                             {...field} 
                             value={formatPhoneNumber(field.value)}
                             onChange={(e) => {
@@ -186,14 +187,14 @@ export function RegisterForm() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select your Gender" />
+                            <SelectValue placeholder="Select your Gender"/>
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="male">Male</SelectItem>
-                          <SelectItem value="female">Female</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                          <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                        <SelectContent className="bg-white text-darker">
+                          <SelectItem value="male" className='hover:text-darker/70'>Male</SelectItem>
+                          <SelectItem value="female" className='hover:text-darker/70'>Female</SelectItem>
+                          <SelectItem value="other" className='hover:text-darker/70'>Other</SelectItem>
+                          <SelectItem value="prefer-not-to-say" className='hover:text-darker/70'>Prefer not to say</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -285,9 +286,13 @@ export function RegisterForm() {
                   )} />
                   <div className="col-span-full flex items-center space-x-2">
                     <input type="checkbox" id="terms" className="accent-primary" required />
-                    <label htmlFor="terms" className="text-sm">I have agree to the <span className="text-blue-600">Terms & Conditions</span></label>
+                    <label htmlFor="terms" className="text-sm">I have agree to the{' '}  
+                      <Link href={"#"} className="text-light hover:underline">
+                       Terms & Conditions
+                      </Link>
+                    </label>
                   </div>
-                  <Button type="submit" className="w-full col-span-full" disabled={isLoading}>
+                  <Button type="submit" className="w-full col-span-full bg-light text-white tracking tracking-wider hover:bg-lightest hover:text-darker" disabled={isLoading}>
                     {isLoading ? 'Registering...' : 'REGISTER'}
                   </Button>
                 </form>
@@ -298,23 +303,23 @@ export function RegisterForm() {
                   <div className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">OR CONTINUE WITH</span>
+                  <span className="px-2 text-xs bg-white text-gray-500">OR CONTINUE WITH</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" type="button" disabled={isLoading} onClick={() => handleOAuthSignIn('google')}>
+                <Button variant="outline" type="button" className=' bg-light text-white tracking tracking-wider hover:bg-lightest hover:text-darker' disabled={isLoading} onClick={() => handleOAuthSignIn('google')}>
                   <FaGoogle className="mr-2 h-4 w-4" /> Google
                 </Button>
-                <Button variant="outline" type="button" disabled={isLoading} onClick={() => handleOAuthSignIn('facebook')}>
-                  <FaFacebook className="mr-2 h-4 w-4" /> Facebook
+                <Button variant="outline" type="button" className=' bg-light text-white tracking tracking-wider hover:bg-lightest hover:text-darker' disabled={isLoading} onClick={() => handleOAuthSignIn('azure-ad')}>
+                  <FaMicrosoft className="mr-2 h-4 w-4" /> Microsoft
                 </Button>
               </div>
             </CardContent>
             <CardFooter className="flex justify-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-darker">
                 Already have an account?{' '}
-                <Link href="/auth/login" className="text-primary font-semibold hover:underline">Login Here</Link>
+                <Link href="/auth/login" className="text-light font-[550] hover:underline">Login Here</Link>
               </p>
             </CardFooter>
           </div>

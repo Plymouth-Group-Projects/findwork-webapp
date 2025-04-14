@@ -1,7 +1,7 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import FacebookProvider from 'next-auth/providers/facebook';
+import AzureADProvider from 'next-auth/providers/azure-ad';
 import bcrypt from 'bcryptjs';
 import { ConnectToDatabase } from './mongoose';
 import { User } from '@/models/user';
@@ -19,9 +19,17 @@ export const authOptions: NextAuthOptions = {
         }
       }
     }),
-    FacebookProvider({
-      clientId: process.env.FACEBOOK_CLIENT_ID!,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+    AzureADProvider({
+      clientId: process.env.MICROSOFT_CLIENT_ID!,
+      clientSecret: process.env.MICROSOFT_CLIENT_SECRET!,
+      tenantId: process.env.MICROSOFT_TENANT_ID,
+      authorization: {
+        params: {
+          prompt: 'select_account',
+          access_type: 'offline',
+          response_type: 'code',
+        },
+      },
     }),
     CredentialsProvider({
       name: 'credentials',
@@ -109,6 +117,39 @@ export const authOptions: NextAuthOptions = {
           }
         } catch (error) {
           console.error("Error storing Google credentials:", error);
+          // Still allow sign in even if credential storage fails
+        }
+      } else if (account?.provider === 'azure-ad' && profile) {
+        try {
+          // Connect to DB when needed
+          await ConnectToDatabase();
+          
+          // Check if user exists
+          const existingUser = await User.findOne({ email: user.email });
+          
+          if (existingUser) {
+            // Update existing user with Microsoft credentials
+            await User.findByIdAndUpdate(existingUser._id, {
+              provider: 'microsoft',
+              microsoftId: profile.sub,
+              microsoftAccessToken: account.access_token,
+              microsoftRefreshToken: account.refresh_token,
+              microsoftTokenExpiry: account.expires_at ? new Date(account.expires_at * 1000) : null,
+            });
+          } else {
+            // Create new user with Microsoft credentials
+            await User.create({
+              name: user.name,
+              email: user.email,
+              provider: 'microsoft',
+              microsoftId: profile.sub,
+              microsoftAccessToken: account.access_token,
+              microsoftRefreshToken: account.refresh_token,
+              microsoftTokenExpiry: account.expires_at ? new Date(account.expires_at * 1000) : null,
+            });
+          }
+        } catch (error) {
+          console.error("Error storing Microsoft credentials:", error);
           // Still allow sign in even if credential storage fails
         }
       }
