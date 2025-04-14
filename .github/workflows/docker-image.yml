@@ -50,11 +50,15 @@ jobs:
         cache-to: type=gha,mode=max
         build-args: |
           NODE_ENV=production
-          PORT=3000
-          NEXT_PUBLIC_API_URL=/api
+          PORT_DEVELOPMENT=3000
+          PORT_PRODUCTION=8080
+          PORT=8080
           MONGODB_URL=${{ secrets.MONGODB_URL }}
+          MONGODB_DB=${{ secrets.MONGODB_DB }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
           NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
           NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
+          NEXT_PUBLIC_API_URL=${{ secrets.NEXTAUTH_URL }}/api
 
     - name: Image digest
       run: echo "The image was pushed with the following digest - ${{ steps.meta.outputs.digest }}"

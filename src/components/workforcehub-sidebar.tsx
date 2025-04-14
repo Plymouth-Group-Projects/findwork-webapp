@@ -8,7 +8,6 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuItem,
-  useSidebar
 } from "@/components/ui/sidebar"
 import { useState, useEffect, Dispatch, SetStateAction } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -25,8 +24,6 @@ export function AppSidebar() {
   const [minSalary, setMinSalary] = useState('')
   const [maxSalary, setMaxSalary] = useState('')
 
-  // Access the sidebar context
-  const sidebarContext = useSidebar();
 
   // Only render on the client to avoid hydration mismatch
   useEffect(() => {
