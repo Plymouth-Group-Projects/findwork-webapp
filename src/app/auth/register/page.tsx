@@ -13,6 +13,8 @@ export default async function RegisterPage() {
   }
   
   return (
-    <RegisterForm />
+    <div>
+      <RegisterForm />
+    </div>
   );
 }
