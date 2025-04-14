@@ -6,14 +6,7 @@ import {
 	CarouselItem,
 	CarouselApi,
 } from "@/components/ui/carousel";
-import {
-	Pagination,
-	PaginationContent,
-	PaginationItem,
-	PaginationLink,
-	PaginationNext,
-	PaginationPrevious,
-} from "@/components/ui/pagination";
+import CarouselIndicator from "@/components/shared/carousel-indicator";
 import {
 	Card,
 	CardContent,
@@ -23,7 +16,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Autoplay from "embla-carousel-autoplay";
-import { Circle } from "lucide-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 export default function Categories() {
@@ -178,37 +170,12 @@ export default function Categories() {
 						))}
 					</CarouselContent>
 				</Carousel>
-				<Pagination className="flex justify-center mt-5 mb-10">
-					<PaginationContent>
-						<PaginationItem>
-							<PaginationPrevious
-								onClick={() => api?.scrollPrev()}
-								className="cursor-pointer hover:text-lightest"
-							/>
-						</PaginationItem>
-
-						{categories.map((_, index) => (
-							<PaginationItem key={index}>
-								<PaginationLink
-									onClick={() => handlePaginationClick(index)}
-									isActive={activeIndex === index}
-									className="cursor-pointer border-none"
-								>
-									<Circle
-										className={`scale-75 ${activeIndex == index ? "fill-white" : ""}`}
-									/>
-								</PaginationLink>
-							</PaginationItem>
-						))}
-
-						<PaginationItem>
-							<PaginationNext
-								onClick={() => api?.scrollNext()}
-								className="cursor-pointer hover:text-lightest"
-							/>
-						</PaginationItem>
-					</PaginationContent>
-				</Pagination>
+				<CarouselIndicator 
+					api={api}
+					itemCount={categories.length}
+					activeIndex={activeIndex}
+					onIndicatorClick={handlePaginationClick}
+				/>
 			</div>
 		</div>
 	);

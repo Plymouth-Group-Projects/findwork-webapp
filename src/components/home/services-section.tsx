@@ -16,18 +16,9 @@ import {
 	CarouselItem,
 } from "@/components/ui/carousel";
 
-import {
-	Pagination,
-	PaginationContent,
-	PaginationItem,
-	PaginationLink,
-	PaginationNext,
-	PaginationPrevious,
-} from "@/components/ui/pagination";
-
+import CarouselIndicator from "@/components/shared/carousel-indicator";
 import Autoplay from "embla-carousel-autoplay";
 import { CarouselApi } from "@/components/ui/carousel";
-import { Circle } from "lucide-react";
 
 export default function Services() {
 	const [activeIndex, setActiveIndex] = React.useState(0);
@@ -151,37 +142,12 @@ export default function Services() {
 						))}
 					</CarouselContent>
 				</Carousel>
-				<Pagination className="flex justify-center mt-5 mb-10">
-					<PaginationContent>
-						<PaginationItem>
-							<PaginationPrevious
-								onClick={() => api?.scrollPrev()}
-								className="cursor-pointer hover:text-lightest"
-							/>
-						</PaginationItem>
-
-						{services.map((_, index) => (
-							<PaginationItem key={index}>
-								<PaginationLink
-									onClick={() => handlePaginationClick(index)}
-									isActive={activeIndex === index}
-									className="cursor-pointer border-none"
-								>
-									<Circle
-										className={`scale-75 ${activeIndex == index ? "fill-white" : ""}`}
-									/>
-								</PaginationLink>
-							</PaginationItem>
-						))}
-
-						<PaginationItem>
-							<PaginationNext
-								onClick={() => api?.scrollNext()}
-								className="cursor-pointer hover:text-lightest"
-							/>
-						</PaginationItem>
-					</PaginationContent>
-				</Pagination>
+				<CarouselIndicator 
+					api={api}
+					itemCount={services.length}
+					activeIndex={activeIndex}
+					onIndicatorClick={handlePaginationClick}
+				/>
 			</div>
 		</>
 	);
