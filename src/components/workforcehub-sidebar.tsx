@@ -8,6 +8,7 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuItem,
+  useSidebar
 } from "@/components/ui/sidebar"
 import { useState, useEffect, Dispatch, SetStateAction } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -23,6 +24,9 @@ export function AppSidebar() {
   const [rateType, setRateType] = useState<string[]>([])
   const [minSalary, setMinSalary] = useState('')
   const [maxSalary, setMaxSalary] = useState('')
+
+  // Access the sidebar context
+  const sidebarContext = useSidebar();
 
   // Only render on the client to avoid hydration mismatch
   useEffect(() => {
@@ -48,8 +52,9 @@ export function AppSidebar() {
   // If not mounted (server render), return a simpler version or loading state
   if (!isMounted) {
     return (
-      <Sidebar>
-        <SidebarContent className="pt-[80px]">
+      <Sidebar collapsible="icon" variant="sidebar" style={{ "--sidebar-width": "350px" } as React.CSSProperties}>
+
+        <SidebarContent className="pt-[80px] px-[30px]">
           <SidebarGroup>
             <SidebarGroupLabel>Filter</SidebarGroupLabel>
             <SidebarGroupContent>
@@ -62,32 +67,38 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar className="fixed top-0 left-0 h-screen w-[300px]">
+    <Sidebar 
+      style={{ "--sidebar-width": "400px" } as React.CSSProperties}
+      collapsible="icon"
+      variant="sidebar"
+    >
       <SidebarContent className="pt-[80px] px-[30px]">
         <SidebarGroup>
           <SidebarGroupLabel>Filter</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="group-data-[state=collapsed]:hidden">
               <SidebarMenuItem>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-semibold text-sm">Type of Employment</h3>
-                    <Button variant="ghost" size="sm" onClick={clearAll}>
-                      Clear All
-                    </Button>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    {["Full Time Jobs", "Part Time Jobs", "Freelancing Jobs", "On-Time Jobs", "Contract"].map((type) => (
-                      <div key={type} className="flex items-center space-x-2">
-                        <Checkbox 
-                          id={`employment-${type}`}
-                          checked={employmentTypes.includes(type)} 
-                          onCheckedChange={() => toggleValue(type, employmentTypes, setEmploymentTypes)}
-                        />
-                        <Label htmlFor={`employment-${type}`}>{type}</Label>
-                      </div>
-                    ))}
+                <div className="space-y-4 flex items-center group-data-[state=collapsed]:hidden">
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-semibold text-sm">Type of Employment</h3>
+                      <Button variant="ghost" size="sm" onClick={clearAll} className="group-data-[state=collapsed]:hidden">
+                        Clear All
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-2 group-data-[state=collapsed]:hidden">
+                      {["Full Time Jobs", "Part Time Jobs", "Freelancing Jobs", "On-Time Jobs", "Contract"].map((type) => (
+                        <div key={type} className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={`employment-${type}`}
+                            checked={employmentTypes.includes(type)} 
+                            onCheckedChange={() => toggleValue(type, employmentTypes, setEmploymentTypes)}
+                          />
+                          <Label htmlFor={`employment-${type}`}>{type}</Label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </SidebarMenuItem>

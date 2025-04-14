@@ -32,7 +32,6 @@ export default function WorkForceHub() {
 
   return (
     <div className="container mx-auto flex flex-col md:flex-row h-screen">
-      <AppSidebar/>
       <main className="flex-1 p-10">
         {/* Search Bar */}
         <div className="flex space-x-4 mb-6">
