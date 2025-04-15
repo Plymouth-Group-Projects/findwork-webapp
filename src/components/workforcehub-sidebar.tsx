@@ -51,9 +51,9 @@ export function AppSidebar() {
     return (
       <Sidebar collapsible="icon" variant="sidebar" style={{ "--sidebar-width": "350px" } as React.CSSProperties}>
 
-        <SidebarContent className="pt-[80px] px-[30px]">
+        <SidebarContent className="pt-[95px] px-[30px]">
           <SidebarGroup>
-            <SidebarGroupLabel>Filter</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-darker text-sm tracking-wider" >Filter</SidebarGroupLabel>
             <SidebarGroupContent>
               <div className="p-4">Loading filters...</div>
             </SidebarGroupContent>
@@ -69,22 +69,22 @@ export function AppSidebar() {
       collapsible="icon"
       variant="sidebar"
     >
-      <SidebarContent className="pt-[80px] px-[30px]">
+      <SidebarContent className="pt-[95px] px-[30px] text-darker">
         <SidebarGroup>
-          <SidebarGroupLabel>Filter</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-darker text-sm tracking-wider">Filter</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="group-data-[state=collapsed]:hidden">
               <SidebarMenuItem>
                 <div className="space-y-4 flex items-center group-data-[state=collapsed]:hidden">
-                  <div className="flex-1">
+                  <div className="flex-1 mt-6">
                     <div className="flex justify-between items-center">
-                      <h3 className="font-semibold text-sm">Type of Employment</h3>
+                      <h3 className="font-semibold text-sm mb-2">Type of Employment</h3>
                       <Button variant="ghost" size="sm" onClick={clearAll} className="group-data-[state=collapsed]:hidden">
                         Clear All
                       </Button>
                     </div>
                     
-                    <div className="space-y-2 group-data-[state=collapsed]:hidden">
+                    <div className="space-y-4 group-data-[state=collapsed]:hidden">
                       {["Full Time Jobs", "Part Time Jobs", "Freelancing Jobs", "On-Time Jobs", "Contract"].map((type) => (
                         <div key={type} className="flex items-center space-x-2">
                           <Checkbox 
@@ -101,9 +101,9 @@ export function AppSidebar() {
               </SidebarMenuItem>
               
               <SidebarMenuItem>
-                <div className="space-y-2">
+                <div className="flex-1 mt-6">
                   <h3 className="font-semibold text-sm mb-2">Seniority Level</h3>
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     {["Entry Level", "Mid Level", "Senior Level", "Expert Level"].map((level) => (
                       <div key={level} className="flex items-center space-x-2">
                         <Checkbox 
@@ -119,9 +119,9 @@ export function AppSidebar() {
               </SidebarMenuItem>
               
               <SidebarMenuItem>
-                <div className="space-y-2">
+                <div className="flex-1 mt-6">
                   <h3 className="font-semibold text-sm mb-2">Salary Range</h3>
-                  <div className="flex space-x-4 mb-2">
+                  <div className="flex space-x-[90px] my-4">
                     {["Daily Rate", "Hourly Rate"].map((rate) => (
                       <div key={rate} className="flex items-center space-x-2">
                         <Checkbox 
@@ -133,7 +133,7 @@ export function AppSidebar() {
                       </div>
                     ))}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-4">
                     <Input
                       type="number"
                       placeholder="Min"
@@ -147,6 +147,10 @@ export function AppSidebar() {
                       onChange={(e) => setMaxSalary(e.target.value)}
                     />
                   </div>
+                  
+                  <Button className="w-full mt-6 bg-light text-white hover:bg-lightest hover:text-darker" variant="default">
+                    Apply Filters
+                  </Button>
                 </div>
               </SidebarMenuItem>
             </SidebarMenu>
