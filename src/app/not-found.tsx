@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export default async function NotFound() {
   return (
@@ -10,11 +11,12 @@ export default async function NotFound() {
       <div className="w-full max-w-lg text-center">
         {/* Logo */}
         <div className="flex justify-center ms-4 mb-12">
-          <img
-            src="https://axyo18gsui.ufs.sh/f/HqrudRjOwkINg6FRtEfX9XmxVlQTfdAFZ20wL6pI75MDHaNt"
-            alt="logo"
+         <Image
+            src="/finalized-logo.svg"
+            alt="Logo"
             width={400}
             height={400}
+            className="ms-4"
           />
         </div>
         
