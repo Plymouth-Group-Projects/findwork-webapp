@@ -4,6 +4,62 @@ import { authOptions } from "../../../lib/auth";
 import { ConnectToDatabase } from "@/lib/mongoose";
 import mongoose from "mongoose";
 
+// Define interfaces for our document types
+interface IFreelanceGig {
+  userId: mongoose.Types.ObjectId;
+  professionalTitle: string;
+  shortBio: string;
+  skills: string;
+  languages: string;
+  experienceLevel: string;
+  gigTitle: string;
+  category: string;
+  subcategory: string;
+  gigDescription: string;
+  searchTags: string;
+  deliveryTime: string;
+  revisions: string;
+  pricingModel: 'single' | 'tiered';
+  singlePrice?: string;
+  basicPackage?: {
+    name: string;
+    description: string;
+    price: string;
+    deliveryTime: string;
+    revisions: string;
+    includes: string;
+  };
+  standardPackage?: {
+    name: string;
+    description: string;
+    price: string;
+    deliveryTime: string;
+    revisions: string;
+    includes: string;
+  };
+  premiumPackage?: {
+    name: string;
+    description: string;
+    price: string;
+    deliveryTime: string;
+    revisions: string;
+    includes: string;
+  };
+  portfolioImages: string[];
+  thumbnail?: string;
+  video?: string;
+  documents: string[];
+  buyerRequirements?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  status: 'active' | 'pending' | 'inactive';
+}
+
+interface IUser {
+  email: string;
+  _id: mongoose.Types.ObjectId;
+}
+
 // Define the schema for freelance gigs
 const freelanceGigSchema = new mongoose.Schema({
   // User relationship
@@ -79,25 +135,25 @@ const freelanceGigSchema = new mongoose.Schema({
 });
 
 // Get or create the model
-let FreelanceGig: mongoose.Model<any>;
+let FreelanceGig: mongoose.Model<IFreelanceGig>;
 try {
   // Try to get the existing model
-  FreelanceGig = mongoose.model("FreelanceGig");
+  FreelanceGig = mongoose.model<IFreelanceGig>("FreelanceGig");
 } catch {
   // Create a new model if it doesn't exist
-  FreelanceGig = mongoose.model("FreelanceGig", freelanceGigSchema);
+  FreelanceGig = mongoose.model<IFreelanceGig>("FreelanceGig", freelanceGigSchema);
 }
 
 // Get or create the User model
-let User: mongoose.Model<any>;
+let User: mongoose.Model<IUser>;
 try {
-  User = mongoose.model("User");
+  User = mongoose.model<IUser>("User");
 } catch {
   // Define a minimal User schema if not already defined
   const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true }
   });
-  User = mongoose.model("User", userSchema);
+  User = mongoose.model<IUser>("User", userSchema);
 }
 
 export async function POST(request: NextRequest) {

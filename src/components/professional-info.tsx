@@ -3,17 +3,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { FormDataType } from "@/types/form-types";
 
 interface ProfessionalInfoProps {
-  formData: {
-    professionalTitle: string;
-    shortBio: string;
-    skills: string;
-    languages: string;
-    experienceLevel: string;
-  };
+  formData: FormDataType;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  setFormData: React.Dispatch<React.SetStateAction<any>>;
+  setFormData: React.Dispatch<React.SetStateAction<FormDataType>>;
 }
 
 const StepOneProfessionalInfo: React.FC<ProfessionalInfoProps> = ({

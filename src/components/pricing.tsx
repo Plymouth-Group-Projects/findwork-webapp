@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormDataType } from "@/types/form-types";
 
 interface PackageData {
   name: string;
@@ -15,15 +16,9 @@ interface PackageData {
 }
 
 interface PricingProps {
-  formData: {
-    pricingModel: string;
-    singlePrice: string;
-    basicPackage: PackageData;
-    standardPackage: PackageData;
-    premiumPackage: PackageData;
-  };
+  formData: FormDataType;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  setFormData: React.Dispatch<React.SetStateAction<any>>;
+  setFormData: React.Dispatch<React.SetStateAction<FormDataType>>;
   handlePackageChange: (packageType: "basicPackage" | "standardPackage" | "premiumPackage", field: string, value: string) => void;
 }
 
