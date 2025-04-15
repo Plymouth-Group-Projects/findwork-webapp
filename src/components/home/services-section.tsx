@@ -50,28 +50,28 @@ export default function Services() {
 			title: "Post a Job",
 			description:
 				"Quickly create and share job postings to find the right workers with ease. Post listings, connect with qualified candidates, and hire the perfect fit—all in just a few clicks!",
-			imageurl: "./job-posting.svg",
+			imageurl: "../job-posting.svg",
 		},
 		{
 			id: 1,
 			title: "Hire Workers",
 			description:
 				"Find the perfect worker for your project from a list of verified professionals. Secure payments ensure transparency and trust, making hiring seamless and worry-free through our platform.",
-			imageurl: "./hire-worker.svg",
+			imageurl: "../hire-worker.svg",
 		},
 		{
 			id: 2,
 			title: "Post Your Proficiency",
 			description:
 				"Highlight your expertise and stand out to potential employers! Create a compelling profile showcasing your skills, experience, and achievements, increasing your chances of getting hired for the perfect opportunity.",
-			imageurl: "./post-proficiency.svg",
+			imageurl: "../post-proficiency.svg",
 		},
 		{
 			id: 3,
 			title: "Apply For Jobs",
 			description:
 				"Discover jobs tailored to your skills, location, and preferences. Explore listings, apply with confidence, and land opportunities that align with your schedule—making job hunting easier and more rewarding!",
-			imageurl: "./apply-job.svg",
+			imageurl: "../apply-job.svg",
 		},
 	];
 

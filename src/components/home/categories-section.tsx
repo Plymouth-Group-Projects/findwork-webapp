@@ -42,7 +42,7 @@ export default function Categories() {
 	const categories = [
 		{
 			id: 0,
-			avaterurl: "./homeAvater.svg",
+			avaterurl: "../homeAvater.svg",
 			title: "Home Maintenance",
 			subhead: "22 Jobs Available",
 			listItems: [
@@ -56,7 +56,7 @@ export default function Categories() {
 		},
 		{
 			id: 1,
-			avaterurl: "./personalAvater.svg",
+			avaterurl: "../personalAvater.svg",
 			title: "Personal Care",
 			subhead: "18 Jobs Available",
 			listItems: [
@@ -70,7 +70,7 @@ export default function Categories() {
 		},
 		{
 			id: 2,
-			avaterurl: "./constructionAvater.svg",
+			avaterurl: "../constructionAvater.svg",
 			title: "Constructions and Renovations",
 			subhead: "12 Jobs Available",
 			listItems: [
@@ -84,7 +84,7 @@ export default function Categories() {
 		},
 		{
 			id: 3,
-			avaterurl: "./transportAvater.svg",
+			avaterurl: "../transportAvater.svg",
 			title: "Transport and Security",
 			subhead: "33 Jobs Available",
 			listItems: [
