@@ -8,18 +8,18 @@ export default function NotFound() {
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-24">
       <div className="w-full max-w-lg text-center">
         {/* Logo */}
-        <div className="flex justify-center ms-4 mb-12">
+        <div className="flex justify-center mb-12">
          <Image
             src="/finalized-logo.svg"
             alt="Logo"
             width={400}
             height={400}
-            className="ms-4"
+            priority
           />
         </div>
         
         {/* 404 heading */}
-        <h1 className="text-8xl font-bold text-lightest mb-4 animate-pulse">404</h1>
+        <h1 className="text-8xl font-bold text-lightest mb-4">404</h1>
         
         {/* Message */}
         <h2 className="text-2xl font-semibold mb-4">Page Not Found</h2>
