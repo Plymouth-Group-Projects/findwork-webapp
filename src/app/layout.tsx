@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bebas_Neue, Lato } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/components/navbar";
+import { AuthProvider } from "@/components/providers/session-provider";
 
 const bebasNeue = Bebas_Neue({
 	weight: "400",
@@ -27,8 +28,10 @@ export default function RootLayout({
 	return (
 		<html lang="en" className="bg-darker text-white">
 			<body className={`${bebasNeue.variable} ${lato.variable} antialiased`}>
-				<NavBar />
-				{children}
+				<AuthProvider>
+					<NavBar />
+					{children}
+				</AuthProvider>
 			</body>
 		</html>
 	);
