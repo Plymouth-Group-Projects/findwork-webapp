@@ -1,10 +1,10 @@
-"use client";
+"use server";
 
 import * as React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default function NotFound() {
+export default async function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-24">
       <div className="w-full max-w-lg text-center">

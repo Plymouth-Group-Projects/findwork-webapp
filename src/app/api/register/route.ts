@@ -1,3 +1,5 @@
+"use server"
+
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { ConnectToDatabase } from '@/lib/mongoose';
