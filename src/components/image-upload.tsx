@@ -1,11 +1,12 @@
 "use client";
 
-import { UploadButton } from "../components/ui/uploadthing";
+import { UploadButton } from "@uploadthing/react";
+import type { OurFileRouter } from "@/app/api/uploadthing/core";
 
 export default function ImageUploader() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <UploadButton
+      <UploadButton<OurFileRouter, "imageUploader">
         endpoint="imageUploader"
         onClientUploadComplete={(res) => {
           // Do something with the response

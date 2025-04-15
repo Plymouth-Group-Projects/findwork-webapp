@@ -13,17 +13,12 @@ export default function WorkforceHubLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="pt-[90px]">
+    <div>
         <SidebarProvider >
-        <SidebarTrigger className="ps-6 pe-5 text-darker z-30"/>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-40">
-            <div>
-              <AppSidebar />
-            </div>
-            <main className="md:col-span-4">
+        <SidebarTrigger className="px-[28px] py-5 mt-[99px] text-darker z-30"/>
+            <main>
                 {children}
             </main>
-          </div>
         </SidebarProvider>
     </div>
   );
