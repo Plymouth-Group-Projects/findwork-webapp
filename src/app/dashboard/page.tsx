@@ -25,7 +25,7 @@ export default async function DashboardPage() {
   
   // Protect the dashboard page
   if (!session) {
-    redirect('/login');
+    redirect('/auth/login');
   }
 
   return (

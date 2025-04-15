@@ -31,50 +31,56 @@ export default function WorkForceHub() {
   ];
 
   return (
-    <div className="container mx-auto flex flex-col md:flex-row h-screen">
-      <main className="flex-1 p-10">
-        {/* Search Bar */}
-        <div className="flex space-x-4 mb-6">
-          <Input placeholder="Job Title or Keyword" className="w-1/3" />
-          <Select>
-            <SelectTrigger><SelectValue placeholder="All Districts" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Districts</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select>
-            <SelectTrigger><SelectValue placeholder="Job Type" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Job Type</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button className="bg-blue-600 flex items-center">
-            <FaSearch className="mr-2" /> Search
-          </Button>
-        </div>
+    <div className="min-h-screen mt-[90px] grid grid-cols-5">
+      {/* Sidebar */}
+      <div className="col-span-1 h-screen sticky top-0">
+        <AppSidebar/>
+      </div>
+      <div className="container mx-auto col-span-4">
+        <main className="flex-1 p-10">
+          {/* Search Bar */}
+          <div className="flex space-x-4 mb-6">
+            <Input placeholder="Job Title or Keyword" className="w-1/3" />
+            <Select>
+              <SelectTrigger><SelectValue placeholder="All Districts" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Districts</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select>
+              <SelectTrigger><SelectValue placeholder="Job Type" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Job Type</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button className="bg-blue-600 flex items-center">
+              <FaSearch className="mr-2" /> Search
+            </Button>
+          </div>
 
-        {/* Recommended Employees */}
-        <h2 className="text-2xl font-semibold mb-4">Recommended Employees</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {employees.map((employee) => (
-            <Card key={employee.id}>
-              <CardHeader>
-                <img
-                  src={employee.image}
-                  alt={employee.name}
-                  className="w-full h-40 object-cover rounded-md"
-                />
-              </CardHeader>
-              <CardContent>
-                <CardTitle>{employee.name}</CardTitle>
-                <p className="text-sm">{employee.rate}</p>
-                <p className="text-xs mt-2">{employee.description}</p>
-                <Button className="mt-3 bg-blue-600 w-full">Details</Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </main>
+          {/* Recommended Employees */}
+          <h2 className="text-2xl font-semibold mb-4">Recommended Employees</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {employees.map((employee) => (
+              <Card key={employee.id}>
+                <CardHeader>
+                  <img
+                    src={employee.image}
+                    alt={employee.name}
+                    className="w-full h-40 object-cover rounded-md"
+                  />
+                </CardHeader>
+                <CardContent>
+                  <CardTitle>{employee.name}</CardTitle>
+                  <p className="text-sm">{employee.rate}</p>
+                  <p className="text-xs mt-2">{employee.description}</p>
+                  <Button className="mt-3 bg-blue-600 w-full">Details</Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
