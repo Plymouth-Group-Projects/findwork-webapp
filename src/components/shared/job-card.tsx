@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { SlArrowRight } from "react-icons/sl";
 
 interface JobOpportunity {
   id: number;
@@ -85,11 +86,16 @@ export default function JobCard({ opportunity, isActive }: JobCardProps) {
           </CardDescription>
           <a href="#">
             <Button
-              className={`absolute bottom-5 font-medium bg-lightest hover:bg-light hover:text-white
+              className={`absolute bottom-5 font-medium bg-light text-white hover:bg-lightest hover:text-darker
+                transition-all duration-300 group px-6
                 ${isActive ? "opacity-100" : "opacity-0"}
               `}
             >
-              Apply Now
+              <span className="my-auto transition-transform group-hover:translate-x-1 duration-300">Apply Now</span>
+              <SlArrowRight 
+                className="ml-2 mt-[2px] transition-transform duration-300 group-hover:translate-x-1" 
+                size={8} 
+              />
             </Button>
           </a>
         </CardContent>

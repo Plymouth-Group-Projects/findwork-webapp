@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { SlArrowRight } from "react-icons/sl";
 
 interface FreelancerCardProps {
   freelancer: {
@@ -80,9 +81,9 @@ export default function FreelancerCard({ freelancer, isActive, index }: Freelanc
           <h2 className="text-base font-semibold mt-3">
             Top Skills
           </h2>
-          <ul className="grid grid-cols-3 mt-1 ms-1">
+          <ul className="grid grid-cols-3 mt-1 gap-4 ms-1">
             {freelancer.topSkills.map((skill, index) => (
-              <li key={index}>{skill}</li>
+              <li key={index} className="border-light border-[1px] rounded-2xl px-1 py-1 text-center text-sm bg-lightest/25">{skill}</li>
             ))}
           </ul>
           <p className="text-sm font-semibold mt-4">
@@ -94,11 +95,19 @@ export default function FreelancerCard({ freelancer, isActive, index }: Freelanc
         </CardDescription>
         <a href="#">
           <Button
-            className={`absolute bottom-5 font-medium bg-lightest hover:bg-light hover:text-white
-            ${isActive ? "opacity-100" : "opacity-0"}
+            className={`
+              absolute bottom-5 left-5 right-5 font-medium 
+              bg-light text-white hover:bg-lightest hover:text-darker
+              py-2 shadow-sm transform group
+              transition-all duration-300 ease-in-out
+              ${isActive ? "opacity-100" : "opacity-0"}
             `}
           >
-            Hire Now
+            <span className="transition-transform duration-300 group-hover:translate-x-1">Hire Now</span>
+            <SlArrowRight 
+              className="ml-2 my-auto transition-transform duration-300 group-hover:translate-x-1" 
+              size={14} 
+            />
           </Button>
         </a>
       </CardContent>

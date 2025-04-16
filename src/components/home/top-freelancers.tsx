@@ -119,7 +119,7 @@ export default function TopFreelancers() {
 						{freelancers.map((freelancer, index) => (
 							<CarouselItem
 								key={index}
-								className="lg:basis-[44%] sm:basis-3/5 xl:basis-[28%]"
+								className="lg:basis-[44%] sm:basis-[58%] xl:basis-[33%]"
 							>
 								<div className="p-1">
 									<FreelancerCard 

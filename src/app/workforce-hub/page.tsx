@@ -77,20 +77,20 @@ export default function WorkForceHub() {
 	];
 
   return (
-    <div className="min-h-screen mt-[60px] md:mt-[90px] grid grid-cols-1 md:grid-cols-12 lg:grid-cols-4">
+    <div className="min-h-screen mt-[60px] md:mt-[90px] grid grid-cols-1 md:grid-cols-9 xl:grid-cols-4">
       {/* Desktop Sidebar - hidden on mobile, visible on larger screens */}
-      <div className="hidden lg:block lg:col-span-1 h-screen sticky top-0">
+      <div className="hidden lg:block lg:col-span-3 xl:col-span-1 h-screen sticky top-0">
         <AppSidebar/>
       </div>
       
       {/* Main Content - adjusts based on screen size */}
-      <div className="container mx-auto col-span-1 md:col-span-12 lg:col-span-3 px-4 md:px-6">
-        <main className="pt-16 md:pt-10 md:pe-6 lg:pe-10">
+      <div className="container mx-auto col-span-1 md:col-span-10 lg:col-span-6 xl:col-span-3">
+        <main className="pt-16 mx-4 sm:mx-0 md:pt-10 lg:pt-0 md:px-6 xl:px-0 xl:pe-6">
           {/* Search Bar */}
           <div className="mb-6">
             <div className="relative w-full">
               <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                <FaSearch className="text-muted-foreground" />
+                <FaSearch className="text-muted" />
               </div>
               <Input 
                 placeholder="Job Title or Keyword" 
@@ -106,9 +106,9 @@ export default function WorkForceHub() {
 
           {/* Recommended Employees */}
           <h2 className="text-2xl font-semibold mb-4">Recommended Employees</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {freelancers.map((freelancer) => (
-              <div key={freelancer.id} className="lg:w-full">
+              <div key={freelancer.id} className="">
                 <FreelancerCard
                   freelancer={freelancer}
                   isActive

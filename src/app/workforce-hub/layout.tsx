@@ -14,7 +14,7 @@ export default function WorkforceHubLayout({
   return (
     <div className="relative">
       <SidebarProvider>
-        <SidebarTrigger className="lg:hidden fixed top-[80px] left-4 z-30 bg-primary text-white p-2 rounded-md shadow-md" />
+        <SidebarTrigger className="lg:hidden fixed flex top-[80px] left-4 z-30 bg-light text-white p-2 rounded-md" />
         <main className="w-full">
           {children}
         </main>
