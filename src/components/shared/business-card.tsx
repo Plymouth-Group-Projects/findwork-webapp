@@ -30,7 +30,7 @@ export default function BusinessCard({ company, activeIndex, index }: BusinessCa
   return (
     <Card
       className={`
-      h-[620px] bg-white border-none text-darker
+      h-[680px] sm:h-[620px] bg-white border-none text-darker
       transition-all duration-300 ease-in-out
       ${
         activeIndex === index
@@ -81,20 +81,27 @@ export default function BusinessCard({ company, activeIndex, index }: BusinessCa
           <h2 className="text-base font-semibold mt-4">
             Our Services
           </h2>
-          <ul className="grid grid-cols-3 mt-2 gap-3">
-            {company.availableServices.map((skill, idx) => (
-              <li key={idx} className="border-light border-[1px] rounded-2xl px-2 py-1 text-center text-sm bg-lightest/25">{skill}</li>
+          <ul className="grid grid-cols-2 sm:grid-cols-3 mt-2 gap-3">
+            {company.availableServices.map((services, idx) => (
+              <li key={idx} className="border-light border-[1px] rounded-2xl px-2 py-1 text-center text-sm bg-lightest/25">{services}</li>
             ))}
           </ul>
         </CardDescription>
         <a href="#">
           <Button
-            className={`absolute bottom-5 font-medium bg-lightest hover:bg-light hover:text-white
-            ${activeIndex === index ? "opacity-100" : "opacity-0"}
+            className={`
+              absolute bottom-5 left-8 right-8 font-medium 
+              bg-light text-white hover:bg-lightest hover:text-darker
+              py-2.5 shadow-sm transform group
+              transition-all duration-300 ease-in-out
+              ${activeIndex === index ? "opacity-100" : "opacity-0"}
             `}
           >
-            Learn More
-            <SlArrowRight className="ml-2 my-auto scale-75" size={10} />
+            <span className="transition-transform duration-300 group-hover:translate-x-1">Learn More</span>
+            <SlArrowRight 
+              className="ml-2 my-auto transition-transform duration-300 group-hover:translate-x-1" 
+              size={14} 
+            />
           </Button>
         </a>
       </CardContent>

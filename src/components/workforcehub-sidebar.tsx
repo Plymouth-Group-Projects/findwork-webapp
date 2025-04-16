@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/sidebar"
 import { useState, useEffect, Dispatch, SetStateAction } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -36,6 +35,7 @@ import {
   RadioGroupItem,
 } from "@/components/ui/radio-group"
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { REACT_LOADABLE_MANIFEST } from "next/dist/shared/lib/constants"
 
 export function AppSidebar() {
   // Using null as initial state to detect client-side rendering
@@ -115,11 +115,10 @@ export function AppSidebar() {
   // If not mounted (server render), return a simpler version or loading state
   if (!isMounted) {
     return (
-      <Sidebar collapsible="icon" variant="sidebar" style={{ "--sidebar-width": "350px" } as React.CSSProperties}>
-
-        <SidebarContent className="pt-[95px] px-[30px]">
+      <Sidebar collapsible="icon" variant="sidebar" className="w-full sm:w-[250px] md:w-[300px] lg:w-[350px]">
+        <SidebarContent className="pt-[95px] px-[15px] sm:px-[20px] md:px-[25px] lg:px-[30px]">
           <SidebarGroup>
-            <SidebarGroupLabel className="text-darker text-sm tracking-wider" >Filter</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-darker text-sm tracking-wider">Filter</SidebarGroupLabel>
             <SidebarGroupContent>
               <div className="p-4">Loading filters...</div>
             </SidebarGroupContent>
@@ -132,11 +131,11 @@ export function AppSidebar() {
   return (
     <>
     <Sidebar 
-      style={{ "--sidebar-width": "440px" } as React.CSSProperties}
+      className={`w-full transition-all duration-300 ${window.innerWidth > 1900 ? "w-[450px]" : window.innerWidth > 1024 ? "w-[400px]" : "w-[340px]"}`}
       collapsible="icon"
       variant="sidebar"
     >
-      <SidebarContent className="pt-[90px] px-[20px] text-darker">
+      <SidebarContent className="pt-[90px] px-[15px] sm:px-[20px] text-darker">
         <SidebarGroup>
           <div className="flex justify-between items-center">
             <SidebarGroupLabel className="text-darker text-base tracking-wider">Filters</SidebarGroupLabel>
