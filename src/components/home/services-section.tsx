@@ -54,17 +54,19 @@ export default function Services() {
 		},
 		{
 			id: 1,
-			title: "Hire Workers",
+			title: "Hire People",
 			description:
 				"Find the perfect worker for your project from a list of verified professionals. Secure payments ensure transparency and trust, making hiring seamless and worry-free through our platform.",
 			imageurl: "../hire-worker.svg",
+			route: "/workforce-hub",
 		},
 		{
 			id: 2,
-			title: "Post Your Proficiency",
+			title: "Post Your Collab",
 			description:
 				"Highlight your expertise and stand out to potential employers! Create a compelling profile showcasing your skills, experience, and achievements, increasing your chances of getting hired for the perfect opportunity.",
 			imageurl: "../post-proficiency.svg",
+			route: "/dashboard/skill-post"
 		},
 		{
 			id: 3,
@@ -72,6 +74,7 @@ export default function Services() {
 			description:
 				"Discover jobs tailored to your skills, location, and preferences. Explore listings, apply with confidence, and land opportunities that align with your schedule—making job hunting easier and more rewarding!",
 			imageurl: "../apply-job.svg",
+			route: "/job-hub",
 		},
 	];
 
@@ -126,7 +129,7 @@ export default function Services() {
 											<CardDescription className="text-base text-justify">
 												{service.description}
 											</CardDescription>
-											<a href="#">
+											<a href={service.route}>
 												<Button
 													className={`absolute bottom-5 font-medium bg-light hover:bg-lightest hover:text-darker
                               ${activeIndex === index ? "opacity-100" : "opacity-0"}

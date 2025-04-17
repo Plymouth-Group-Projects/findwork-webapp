@@ -35,7 +35,7 @@ export default function HeroSection() {
 							<span className="text-lightest">US</span>!
 						</p>
 						<div className="mt-12">
-							<a href="#">
+							<a href="/auth/register">
 								<Button className="bg-light lg:py-5 lg:px-6 text-sm xl:text-base hover:text-darker hover:bg-lightest">
 									<span className="font-lato font-medium">JOIN US NOW</span>
 									<ArrowRight className="ml-2 sm:scale-110" />
