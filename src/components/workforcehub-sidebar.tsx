@@ -34,10 +34,8 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from "@/components/ui/radio-group"
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { REACT_LOADABLE_MANIFEST } from "next/dist/shared/lib/constants"
 
-export function AppSidebar() {
+export function WorkforceSidebar() {
   // Using null as initial state to detect client-side rendering
   const [isMounted, setIsMounted] = useState(false)
   const [employmentTypes, setEmploymentTypes] = useState<string[]>([])

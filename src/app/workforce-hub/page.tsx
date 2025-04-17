@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { AppSidebar } from "@/components/workforcehub-sidebar";
+import { WorkforceSidebar } from "@/components/workforcehub-sidebar";
 import FreelancerCard from "@/components/shared/freelancer-card";
 
 export default function WorkForceHub() {
@@ -80,12 +80,12 @@ export default function WorkForceHub() {
     <div className="min-h-screen mt-[60px] md:mt-[90px] grid grid-cols-1 md:grid-cols-9 xl:grid-cols-4">
       {/* Desktop Sidebar - hidden on mobile, visible on larger screens */}
       <div className="hidden lg:block lg:col-span-3 xl:col-span-1 h-screen sticky top-0">
-        <AppSidebar/>
+        <WorkforceSidebar/>
       </div>
       
       {/* Main Content - adjusts based on screen size */}
       <div className="container mx-auto col-span-1 md:col-span-10 lg:col-span-6 xl:col-span-3">
-        <main className="pt-16 mx-4 sm:mx-0 md:pt-10 lg:pt-0 md:px-6 xl:px-0 xl:pe-6">
+        <main className="pt-16 mx-4 sm:mx-0 md:pt-10 lg:pt-6 md:px-6 xl:px-0 xl:pe-6">
           {/* Search Bar */}
           <div className="mb-6">
             <div className="relative w-full">
@@ -105,7 +105,7 @@ export default function WorkForceHub() {
           </div>
 
           {/* Recommended Employees */}
-          <h2 className="text-2xl font-semibold mb-4">Recommended Employees</h2>
+          <h2 className="text-2xl font-semibold mb-4">RECOMMENDED FREELANCERS</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {freelancers.map((freelancer) => (
               <div key={freelancer.id} className="">
