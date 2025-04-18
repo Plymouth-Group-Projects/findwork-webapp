@@ -121,7 +121,7 @@ export default function AboutUs() {
           <h2 className="text-3xl md:text-4xl font-bebas tracking-wide mb-6">CONNECT WITH US</h2>
           <Separator className="w-16 h-1 bg-lightest mx-auto mb-8" />
           <p className="font-lato text-lg max-w-2xl mx-auto mb-8">
-            Have questions about FindWork? We're here to help! Contact our team for support, partnership opportunities, or feedback.
+            Have questions about FindWork? We&apos;re here to help! Contact our team for support, partnership opportunities, or feedback.
           </p>
           <p className="text-darker font-lato mb-8">
             Email Us At: <span className="text-light">findwork.codearch@gmail.com</span>
