@@ -120,6 +120,7 @@ export default function BusinessHub() {
                 <BusinessCard
                   company={company}
                   isActive
+                  index={index}
                 />
                 </div>
             ))}
