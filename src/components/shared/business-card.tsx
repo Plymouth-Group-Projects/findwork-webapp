@@ -22,18 +22,18 @@ interface Company {
 
 interface BusinessCardProps {
   company: Company;
-  activeIndex: number;
+  isActive: boolean;
   index: number;
 }
 
-export default function BusinessCard({ company, activeIndex, index }: BusinessCardProps) {
+export default function BusinessCard({ company, isActive, index}: BusinessCardProps) {
   return (
     <Card
       className={`
       h-[680px] sm:h-[620px] bg-white border-none text-darker
       transition-all duration-300 ease-in-out
       ${
-        activeIndex === index
+        isActive
           ? "scale-100 opacity-100"
           : "scale-90 opacity-50 blur-[2px]"
       }
@@ -82,8 +82,8 @@ export default function BusinessCard({ company, activeIndex, index }: BusinessCa
             Our Services
           </h2>
           <ul className="grid grid-cols-2 sm:grid-cols-3 mt-2 gap-3">
-            {company.availableServices.map((services, idx) => (
-              <li key={idx} className="border-light border-[1px] rounded-2xl px-2 py-1 text-center text-sm bg-lightest/25">{services}</li>
+            {company.availableServices.map((services, index) => (
+              <li key={index} className="border-light border-[1px] rounded-2xl px-2 py-1 text-center text-sm bg-lightest/25">{services}</li>
             ))}
           </ul>
         </CardDescription>
@@ -94,7 +94,7 @@ export default function BusinessCard({ company, activeIndex, index }: BusinessCa
               bg-light text-white hover:bg-lightest hover:text-darker
               py-2.5 shadow-sm transform group
               transition-all duration-300 ease-in-out
-              ${activeIndex === index ? "opacity-100" : "opacity-0"}
+              ${isActive ? "opacity-100" : "opacity-0"}
             `}
           >
             <span className="transition-transform duration-300 group-hover:translate-x-1">Learn More</span>

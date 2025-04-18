@@ -133,7 +133,7 @@ export default function TopCompanies() {
 								<div className="p-1">
 									<BusinessCard
 										company={company}
-										activeIndex={activeIndex}
+										isActive={activeIndex === index}
 										index={index}
 									/>
 								</div>

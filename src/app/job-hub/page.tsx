@@ -1,100 +1,133 @@
-
 import { FaSearch } from "react-icons/fa";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { JobHubSidebar } from "@/components/jobhub-sidebar";
+import JobCard from "@/components/shared/job-card";
 
 export default function JobHub() {
-  const employees = [
+  const jobOppurtunities = [
+    {
+      id: 0,
+      imageUrl: "./electrician.svg",
+      title: "Electrician",
+      employementType: "Full Time",
+      company: "DSN Constructions (Pvt) Ltd",
+      location: "No: 123, Colombo Road, Colombo 07",
+      description:
+        "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Deleniti, excepturi? Fugiat voluptatum odit minima voluptate, at perspiciatis ab tenetur enim.",
+      salary: "Rs.35,000/Month",
+      deadline: "2025-03-10",
+      receivedApplications: "100",
+    },
     {
       id: 1,
-      name: "Babysitter",
-      rate: "Rs. 250/hr",
+      imageUrl: "./electrician.svg",
+      title: "Job Title",
+      employementType: "Full Time",
+      company: "DSN Constructions (Pvt) Ltd",
+      location: "No: 123, Colombo Road, Colombo 07",
       description:
-        "A skilled babysitter with 3+ years of experience, CPR certification, and expertise with children.",
-      image: "/babysitter.jpg",
+        "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Deleniti, excepturi? Fugiat voluptatum odit minima voluptate, at perspiciatis ab tenetur enim.",
+      salary: "Rs.35,000/Month",
+      deadline: "2025-03-10",
+      receivedApplications: "100",
     },
     {
       id: 2,
-      name: "Babysitter",
-      rate: "Rs. 250/hr",
+      imageUrl: "./electrician.svg",
+      title: "Job Title",
+      employementType: "Full Time",
+      company: "DSN Constructions (Pvt) Ltd",
+      location: "No: 123, Colombo Road, Colombo 07",
       description:
-        "A skilled babysitter with 3+ years of experience, CPR certification, and expertise with children.",
-      image: "/babysitter.jpg",
+        "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Deleniti, excepturi? Fugiat voluptatum odit minima voluptate, at perspiciatis ab tenetur enim.",
+      salary: "Rs.35,000/Month",
+      deadline: "2025-03-10",
+      receivedApplications: "100",
     },
     {
       id: 3,
-      name: "Babysitter",
-      rate: "Rs. 250/hr",
+      imageUrl: "./electrician.svg",
+      title: "Job Title",
+      employementType: "Full Time",
+      company: "DSN Constructions (Pvt) Ltd",
+      location: "No: 123, Colombo Road, Colombo 07",
       description:
-        "A skilled babysitter with 3+ years of experience, CPR certification, and expertise with children.",
-      image: "/babysitter.jpg",
+        "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Deleniti, excepturi? Fugiat voluptatum odit minima voluptate, at perspiciatis ab tenetur enim.",
+      salary: "Rs.35,000/Month",
+      deadline: "2025-03-10",
+      receivedApplications: "100",
+    },
+    {
+      id: 4,
+      imageUrl: "./electrician.svg",
+      title: "Job Title",
+      employementType: "Full Time",
+      company: "DSN Constructions (Pvt) Ltd",
+      location: "No: 123, Colombo Road, Colombo 07",
+      description:
+        "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Deleniti, excepturi? Fugiat voluptatum odit minima voluptate, at perspiciatis ab tenetur enim.",
+      salary: "Rs.35,000/Month",
+      deadline: "2025-03-10",
+      receivedApplications: "100",
+    },
+    {
+      id: 5,
+      imageUrl: "./electrician.svg",
+      title: "Job Title",
+      employementType: "Full Time",
+      company: "DSN Constructions (Pvt) Ltd",
+      location: "No: 123, Colombo Road, Colombo 07",
+      description:
+        "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Deleniti, excepturi? Fugiat voluptatum odit minima voluptate, at perspiciatis ab tenetur enim.",
+      salary: "Rs.35,000/Month",
+      deadline: "2025-03-10",
+      receivedApplications: "100",
     },
   ];
 
   return (
-    <div className="flex pt-[60px] min-h-screen bg-[#1E1E1E] text-white">
-      {/* Sidebar */}
-      <aside className="w-1/4 bg-white text-black p-6 rounded-md">
-        <h2 className="text-2xl font-bold mb-4">FINDWORK</h2>
-        <div>
-          <h3 className="font-semibold">Type of Employment</h3>
-          <ul className="text-sm mt-2 space-y-2">
-            <li><Checkbox /> Full Time Jobs</li>
-            <li><Checkbox /> Part Time Jobs</li>
-            <li><Checkbox /> Freelancing Jobs</li>
-            <li><Checkbox /> On-Time Jobs</li>
-            <li><Checkbox /> Contract</li>
-          </ul>
-        </div>
-      </aside>
+    <div className="min-h-screen mt-[60px] md:mt-[90px] grid grid-cols-1 md:grid-cols-9 xl:grid-cols-4">
+      {/* Desktop Sidebar - hidden on mobile, visible on larger screens */}
+      <div className="hidden lg:block lg:col-span-3 xl:col-span-1 h-screen sticky top-0">
+        <JobHubSidebar />
+      </div>
+      
+      {/* Main Content - adjusts based on screen size */}
+      <div className="container mx-auto col-span-1 md:col-span-9 lg:col-span-6 xl:col-span-3">
+        <main className="pt-16 mx-4 sm:mx-0 md:pt-10 lg:pt-6 md:px-6 xl:px-0 xl:pe-6">
+          {/* Search Bar */}
+          <div className="mb-6">
+            <div className="relative w-full">
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <FaSearch className="text-muted" />
+              </div>
+              <Input 
+                placeholder="Job Title or Keyword" 
+                className="w-full pl-10 pr-24 py-2 border-0 focus:ring-2 focus:ring-lightest bg-lightest/40 shadow-sm" 
+              />
+              <div className="absolute inset-y-0 right-0 flex items-center">
+                <Button className="bg-light hover:bg-lightest hover:text-darker flex items-center justify-center px-4 rounded-s-none">
+                  <FaSearch className="mr-1" /> Search
+                </Button>
+              </div>
+            </div>
+          </div>
 
-      {/* Main Content */}
-      <main className="flex-1 p-10">
-        {/* Search Bar */}
-        <div className="flex space-x-4 mb-6">
-          <Input placeholder="Job Title or Keyword" className="w-1/3" />
-          <Select>
-            <SelectTrigger><SelectValue placeholder="All Districts" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Districts</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select>
-            <SelectTrigger><SelectValue placeholder="Job Type" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Job Type</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button className="bg-blue-600 flex items-center">
-            <FaSearch className="mr-2" /> Search
-          </Button>
-        </div>
-
-        {/* Recommended Employees */}
-        <h2 className="text-2xl font-semibold mb-4">Recommended Employees</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {employees.map((employee) => (
-            <Card key={employee.id}>
-              <CardHeader>
-                <img
-                  src={employee.image}
-                  alt={employee.name}
-                  className="w-full h-40 object-cover rounded-md"
+          {/* Available Job Opportunities */}
+          <h2 className="text-2xl font-semibold mb-4">RECOMMEDNED JOBS</h2>
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            {jobOppurtunities.map((opportunity) => (
+              <div key={opportunity.id} className="">
+                <JobCard
+                  opportunity={opportunity}
+                  isActive={true}
                 />
-              </CardHeader>
-              <CardContent>
-                <CardTitle>{employee.name}</CardTitle>
-                <p className="text-sm">{employee.rate}</p>
-                <p className="text-xs mt-2">{employee.description}</p>
-                <Button className="mt-3 bg-blue-600 w-full">Details</Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </main>
+              </div>
+            ))}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
