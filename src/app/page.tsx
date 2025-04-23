@@ -6,6 +6,7 @@ import LatestJobSection from "@/components/home/latest-job-section";
 import TopFreelancers from "@/components/home/top-freelancers";
 import TopCompanies from "@/components/home/top-companies";
 import Footer from "@/components/footer";
+import ContactUs from "@/components/home/contactus-section";
 
 export default function Home() {
 	return (
@@ -16,7 +17,7 @@ export default function Home() {
 			<LatestJobSection />
 			<TopFreelancers />
 			<TopCompanies />
-			<Footer />
+			<ContactUs />
 		</>
 	);
 }

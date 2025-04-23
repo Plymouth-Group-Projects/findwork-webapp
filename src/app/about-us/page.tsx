@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import Link from 'next/link';
 
 export default function AboutUs() {
   return (
@@ -126,11 +127,12 @@ export default function AboutUs() {
           <p className="text-darker font-lato mb-8">
             Email Us At: <span className="text-light">findwork.codearch@gmail.com</span>
           </p>
-          
-          <Button variant="default" className="bg-light text-white hover:bg-lightest hover:text-darker">
-            <span className="font-latofont-medium">CONTACT US</span>
-            <ArrowRight className="ml-1" />
-          </Button>
+          <Link href="/contact-us" className="inline-block">
+            <Button variant="default" className="bg-light text-white hover:bg-lightest hover:text-darker">
+              <span className="font-latofont-medium">CONTACT US</span>
+              <ArrowRight className="ml-1" />
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

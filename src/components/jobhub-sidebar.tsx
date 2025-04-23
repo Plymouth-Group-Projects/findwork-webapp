@@ -86,7 +86,10 @@ export function JobHubSidebar() {
   // If not mounted (server render), return a simpler version or loading state
   if (!isMounted) {
     return (
-      <Sidebar collapsible="icon" variant="sidebar" className="w-full sm:w-[250px] md:w-[300px] lg:w-[350px]">
+      <Sidebar 
+      collapsible="icon"
+      variant="sidebar" 
+      className="w-full sm:w-[250px] md:w-[300px] lg:w-[350px]">
         <SidebarContent className="pt-[95px] px-[15px] sm:px-[20px] md:px-[25px] lg:px-[30px]">
           <SidebarGroup>
             <SidebarGroupLabel className="text-darker text-sm tracking-wider">Filter</SidebarGroupLabel>
@@ -103,10 +106,10 @@ export function JobHubSidebar() {
     <>
     <Sidebar 
       className={`w-full transition-all duration-300 ${window.innerWidth > 1900 ? "w-[450px]" : window.innerWidth > 1024 ? "w-[400px]" : "w-[340px]"}`}
-      collapsible="icon"
+      collapsible={`${window.innerWidth < 1024 ? "icon" : "none"}`}
       variant="sidebar"
     >
-      <SidebarContent className="pt-[90px] px-[15px] sm:px-[20px] text-darker">
+      <SidebarContent className="pt-[40px] px-[15px] sm:px-[20px] text-darker">
         <SidebarGroup>
           <div className="flex justify-between items-center">
             <SidebarGroupLabel className="text-darker text-base tracking-wider">Filters</SidebarGroupLabel>
