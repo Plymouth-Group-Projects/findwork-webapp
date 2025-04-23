@@ -95,7 +95,7 @@ export default function JobHub() {
       
       {/* Main Content - adjusts based on screen size */}
       <div className="container mx-auto col-span-1 md:col-span-9 lg:col-span-6 xl:col-span-3">
-        <main className="pt-16 mx-4 sm:mx-0 md:pt-10 lg:pt-6 md:px-6 xl:px-0 xl:pe-6">
+        <main className="py-24 mx-4 sm:mx-0 md:py-16 lg:py-10 md:px-6 xl:px-0 xl:pe-6">
           {/* Search Bar */}
           <div className="mb-6">
             <div className="relative w-full">

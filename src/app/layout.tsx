@@ -3,6 +3,7 @@ import { Bebas_Neue, Lato } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/components/navbar";
 import { AuthProvider } from "@/components/providers/session-provider";
+import Footer from "@/components/footer";
 
 const bebasNeue = Bebas_Neue({
 	weight: "400",
@@ -31,6 +32,7 @@ export default function RootLayout({
 				<AuthProvider>
 					<NavBar />
 					{children}
+					<Footer />
 				</AuthProvider>
 			</body>
 		</html>

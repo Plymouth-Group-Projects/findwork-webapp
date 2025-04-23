@@ -13,7 +13,7 @@ export default function JobHubLayout({
 }>) {
   return (
     <div className="relative">
-      <SidebarProvider>
+      <SidebarProvider className="mt-[-20px]">
         <SidebarTrigger className="lg:hidden fixed flex top-[80px] left-4 z-30 bg-light text-white p-2 rounded-md" />
         <main className="w-full">
           {children}
