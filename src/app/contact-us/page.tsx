@@ -21,7 +21,7 @@ const FAQ_ITEMS = [
   },
   { 
     question: "How can I report a technical issue?", 
-    answer: "Please use the form above and select 'Technical Support' in the subject dropdown."
+    answer: "Please use the form above and select &apos;Technical Support&apos; in the subject dropdown."
   }
 ];
 
@@ -33,7 +33,7 @@ export default function ContactUs() {
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold tracking-wider text-white sm:text-5xl">
             <span className="block">GET IN TOUCH</span>
-            <span className="block font-medium text-3xl mt-8">We'd love to hear from you</span>
+            <span className="block font-medium text-3xl mt-8">We&apos;d love to hear from you</span>
           </h1>
           <p className="mt-2 text-xl max-w-2xl mx-auto">
             Have a question, feedback, or want to work together? 
@@ -122,7 +122,7 @@ export default function ContactUs() {
         <div className="mt-20 text-center">
           <h2 className="text-3xl font-bold text-white mb-2">Frequently Asked Questions</h2>
           <p className="mt-4 text-lg text-white max-w-3xl mx-auto">
-            Can't find the answer you're looking for? Reach out to our customer support team.
+            Can&apos;t find the answer you&apos;re looking for? Reach out to our customer support team.
           </p>
           <div className="mt-12 grid gap-6 lg:grid-cols-2 max-w-4xl mx-auto">
             {FAQ_ITEMS.map((faq, index) => (

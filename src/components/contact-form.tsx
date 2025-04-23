@@ -97,7 +97,7 @@ export default function ContactForm() {
         <CardHeader>
           <CardTitle>Send us a message</CardTitle>
           <CardDescription>
-            Fill out the form below and we'll respond as soon as possible.
+            Fill out the form below and we&apos;ll respond as soon as possible.
           </CardDescription>
         </CardHeader>
         <CardContent>

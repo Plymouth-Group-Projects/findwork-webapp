@@ -8,7 +8,7 @@ export default function ContactUs() {
         <div className="text-center">
           <h2 className="text-3xl md:text-4xl font-semibold mb-4">Contact Us</h2>
           <p className="max-w-2xl mx-auto">
-            Have questions or need assistance? Reach out to our team and we'll get back to you as soon as possible.
+            Have questions or need assistance? Reach out to our team and we&apos;ll get back to you as soon as possible.
           </p>
         </div>
         <ContactForm />
