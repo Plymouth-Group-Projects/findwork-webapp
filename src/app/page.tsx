@@ -18,6 +18,7 @@ export default function Home() {
 			<TopFreelancers />
 			<TopCompanies />
 			<ContactUs />
+			<Footer />
 		</>
 	);
 }

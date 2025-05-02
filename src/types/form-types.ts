@@ -25,8 +25,8 @@ export interface FormDataType {
   revisions: string;
   
   // Pricing
-  pricingModel: string;
-  singlePrice: string;
+  pricingModel: 'single' | 'tiered';
+  singlePrice?: string;
   basicPackage: PackageDetails;
   standardPackage: PackageDetails;
   premiumPackage: PackageDetails;
@@ -34,7 +34,10 @@ export interface FormDataType {
   // Media & Requirements
   portfolioImages: string[];
   thumbnail: string;
-  video: string;
-  documents: string[];
-  buyerRequirements: string;
+  video?: string;
+  documents?: string[];
+  buyerRequirements?: string;
+  
+  // Metadata (optional in form but added for consistency)
+  status?: 'active' | 'pending' | 'inactive';
 }

@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { JobHubSidebar } from "@/components/jobhub-sidebar";
 import JobCard from "@/components/shared/job-card";
+import Footer from "@/components/footer";
 
 export default function JobHub() {
   const jobOppurtunities = [
@@ -127,6 +128,9 @@ export default function JobHub() {
             ))}
           </div>
         </main>
+        <div className="ms-[-30px]">
+          <Footer />
+        </div>
       </div>
     </div>
   );

@@ -12,6 +12,8 @@ export interface IUser extends Document {
   dateOfBirth?: string;
   image?: string;
   provider: 'credentials' | 'google' | 'facebook';
+  role: string;
+  profileViews: number;
   lastLogin: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -55,6 +57,15 @@ const UserSchema = new Schema<IUser>(
       default: 'credentials',
       enum: ['credentials', 'google', 'facebook'],
     },
+    role: {
+      type: String,
+      default: 'Freelancer',
+      enum: ['Freelancer', 'Employer', 'Client', 'Admin'],
+    },
+    profileViews: {
+      type: Number,
+      default: 0,
+    },
     lastLogin: {
       type: Date,
       default: Date.now,
@@ -66,7 +77,7 @@ const UserSchema = new Schema<IUser>(
     minimize: true,
     // Create lean JSON when retrieving data
     toJSON: {
-      transform: (doc,ret) => {
+      transform: (doc, ret) => {
         delete ret.password; // Never send password
         delete ret.__v; // Remove version key
         return ret;
@@ -74,7 +85,6 @@ const UserSchema = new Schema<IUser>(
     },
   }
 );
-
 
 // Prevent model recompilation when the file is imported multiple times
 export const User = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);

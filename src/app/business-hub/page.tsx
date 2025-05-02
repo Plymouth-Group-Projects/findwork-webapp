@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BusinessSidebar } from '@/components/businesshub-sidebar';
 import BusinessCard from '@/components/shared/business-card';
+import Footer from '@/components/footer';
 
 export default function BusinessHub() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -126,6 +127,9 @@ export default function BusinessHub() {
             ))}
           </div>
         </main>
+        <div className="ms-[-30px]">
+          <Footer />
+        </div>
       </div>
     </div>
   );

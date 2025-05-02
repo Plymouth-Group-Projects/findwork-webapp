@@ -75,7 +75,7 @@ const StepOneProfessionalInfo: React.FC<ProfessionalInfoProps> = ({
           <SelectTrigger>
             <SelectValue placeholder="Select experience level" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="text-darker bg-white">
             <SelectItem value="beginner">Beginner</SelectItem>
             <SelectItem value="intermediate">Intermediate</SelectItem>
             <SelectItem value="expert">Expert</SelectItem>

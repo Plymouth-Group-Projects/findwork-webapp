@@ -98,7 +98,7 @@ export function BusinessSidebar() {
     <>
     <Sidebar 
       className={`w-full transition-all duration-300 ${window.innerWidth > 1900 ? "w-[450px]" : window.innerWidth > 1024 ? "w-[400px]" : "w-[340px]"}`}
-      collapsible={`${window.innerWidth < 1024 ? "icon" : "none"}`}
+      collapsible="icon"
       variant="sidebar"
     >
       <SidebarContent className="pt-[40px] px-[15px] sm:px-[20px] text-darker">

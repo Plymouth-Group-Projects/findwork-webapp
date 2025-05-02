@@ -21,7 +21,7 @@ const FAQ_ITEMS = [
   },
   { 
     question: "How can I report a technical issue?", 
-    answer: "Please use the form above and select &apos;Technical Support&apos; in the subject dropdown."
+    answer: "Please use the form above and select Technical Support in the subject dropdown."
   }
 ];
 
@@ -128,7 +128,7 @@ export default function ContactUs() {
             {FAQ_ITEMS.map((faq, index) => (
               <div key={index} className="bg-white p-6 rounded-lg shadow-md text-left hover:shadow-lg transition-shadow border border-lightest">
                 <h3 className="text-lg font-medium text-darker">{faq.question}</h3>
-                <p className="mt-2 text-darker">{faq.answer}</p>  
+                <span className="mt-2 text-darker">{faq.answer}</span>  
               </div>
             ))}
           </div>
