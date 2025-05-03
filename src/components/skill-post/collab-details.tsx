@@ -5,13 +5,13 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Label } from "@/components/ui/label";
 import { FormDataType } from "@/types/form-types";
 
-interface GigDetailsProps {
+interface CollabDetailsProps {
   formData: FormDataType;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   setFormData: React.Dispatch<React.SetStateAction<FormDataType>>;
 }
 
-const StepTwoGigDetails: React.FC<GigDetailsProps> = ({
+const StepTwoCollabDetails: React.FC<CollabDetailsProps> = ({
   formData,
   handleChange,
   setFormData,
@@ -19,7 +19,7 @@ const StepTwoGigDetails: React.FC<GigDetailsProps> = ({
   return (
     <div className="space-y-4">
       <div>
-        <Label htmlFor="gigTitle">Gig Title</Label>
+        <Label htmlFor="gigTitle">Collab Title</Label>
         <Input 
           id="gigTitle"
           name="gigTitle"
@@ -40,7 +40,7 @@ const StepTwoGigDetails: React.FC<GigDetailsProps> = ({
             <SelectTrigger>
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="text-darker bg-white">
               <SelectItem value="design">Design & Creative</SelectItem>
               <SelectItem value="development">Development & IT</SelectItem>
               <SelectItem value="writing">Writing & Translation</SelectItem>
@@ -59,7 +59,7 @@ const StepTwoGigDetails: React.FC<GigDetailsProps> = ({
             <SelectTrigger>
               <SelectValue placeholder="Select subcategory" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="text-darker bg-white">
               <SelectItem value="logo">Logo Design</SelectItem>
               <SelectItem value="webdesign">Website Design</SelectItem>
               <SelectItem value="webapp">Web Applications</SelectItem>
@@ -70,7 +70,7 @@ const StepTwoGigDetails: React.FC<GigDetailsProps> = ({
       </div>
       
       <div>
-        <Label htmlFor="gigDescription">Gig Description</Label>
+        <Label htmlFor="gigDescription">Collab Description</Label>
         <Textarea 
           id="gigDescription"
           name="gigDescription"
@@ -127,4 +127,4 @@ const StepTwoGigDetails: React.FC<GigDetailsProps> = ({
   );
 };
 
-export default StepTwoGigDetails;
+export default StepTwoCollabDetails;

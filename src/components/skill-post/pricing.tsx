@@ -34,7 +34,7 @@ const StepThreePricing: React.FC<PricingProps> = ({
         <Label className="text-lg font-medium">Pricing Model</Label>
         <RadioGroup 
           value={formData.pricingModel} 
-          onValueChange={(value) => setFormData({...formData, pricingModel: value})}
+          onValueChange={(value) => setFormData({...formData, pricingModel: value as 'single' | 'tiered'})}
           className="flex space-x-4 mt-2"
         >
           <div className="flex items-center space-x-2">

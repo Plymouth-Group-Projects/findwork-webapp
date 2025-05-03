@@ -1,149 +1,14 @@
-"use server"
-
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/auth";
 import { ConnectToDatabase } from "@/lib/mongoose";
 import mongoose from "mongoose";
+import { FreelanceGig, IFreelanceGig } from "@/models/freelance-gig";
 
-// Define interfaces for our document types
-interface IFreelanceGig {
-  userId: mongoose.Types.ObjectId;
-  professionalTitle: string;
-  shortBio: string;
-  skills: string;
-  languages: string;
-  experienceLevel: string;
-  gigTitle: string;
-  category: string;
-  subcategory: string;
-  gigDescription: string;
-  searchTags: string;
-  deliveryTime: string;
-  revisions: string;
-  pricingModel: 'single' | 'tiered';
-  singlePrice?: string;
-  basicPackage?: {
-    name: string;
-    description: string;
-    price: string;
-    deliveryTime: string;
-    revisions: string;
-    includes: string;
-  };
-  standardPackage?: {
-    name: string;
-    description: string;
-    price: string;
-    deliveryTime: string;
-    revisions: string;
-    includes: string;
-  };
-  premiumPackage?: {
-    name: string;
-    description: string;
-    price: string;
-    deliveryTime: string;
-    revisions: string;
-    includes: string;
-  };
-  portfolioImages: string[];
-  thumbnail?: string;
-  video?: string;
-  documents: string[];
-  buyerRequirements?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  status: 'active' | 'pending' | 'inactive';
-}
-
+// Only need to define User interface as we're keeping that model logic here
 interface IUser {
   email: string;
   _id: mongoose.Types.ObjectId;
-}
-
-// Define the schema for freelance gigs
-const freelanceGigSchema = new mongoose.Schema({
-  // User relationship
-  userId: {
-    type: mongoose.Schema.Types.ObjectId, 
-    required: true,
-    ref: "User"
-  },
-  
-  // Professional Information
-  professionalTitle: { type: String, required: true },
-  shortBio: { type: String, required: true },
-  skills: { type: String, required: true },
-  languages: { type: String, required: true },
-  experienceLevel: { type: String, required: true },
-  
-  // Gig Details
-  gigTitle: { type: String, required: true },
-  category: { type: String, required: true },
-  subcategory: { type: String, required: true },
-  gigDescription: { type: String, required: true },
-  searchTags: { type: String, required: true },
-  deliveryTime: { type: String, required: true },
-  revisions: { type: String, required: true },
-  
-  // Pricing
-  pricingModel: { 
-    type: String, 
-    enum: ["single", "tiered"], 
-    required: true 
-  },
-  singlePrice: String,
-  basicPackage: {
-    name: String,
-    description: String,
-    price: String,
-    deliveryTime: String,
-    revisions: String,
-    includes: String
-  },
-  standardPackage: {
-    name: String,
-    description: String,
-    price: String,
-    deliveryTime: String,
-    revisions: String,
-    includes: String
-  },
-  premiumPackage: {
-    name: String,
-    description: String,
-    price: String,
-    deliveryTime: String,
-    revisions: String,
-    includes: String
-  },
-  
-  // Media & Requirements
-  portfolioImages: [String], // URLs to the images stored in UploadThing
-  thumbnail: String,         // URL to the thumbnail image
-  video: String,             // URL to the video
-  documents: [String],       // URLs to the documents
-  buyerRequirements: String,
-  
-  // Metadata
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-  status: { 
-    type: String, 
-    enum: ["active", "pending", "inactive"], 
-    default: "active" 
-  }
-});
-
-// Get or create the model
-let FreelanceGig: mongoose.Model<IFreelanceGig>;
-try {
-  // Try to get the existing model
-  FreelanceGig = mongoose.model<IFreelanceGig>("FreelanceGig");
-} catch {
-  // Create a new model if it doesn't exist
-  FreelanceGig = mongoose.model<IFreelanceGig>("FreelanceGig", freelanceGigSchema);
 }
 
 // Get or create the User model
@@ -184,6 +49,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Always find the user by email to get the MongoDB ObjectId
     const dbUser = await User.findOne({ email: userEmail });
     if (!dbUser) {
       return NextResponse.json(
@@ -192,10 +58,55 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Always use the MongoDB ObjectId from the database
+    const userId = dbUser._id;
+    
+    // Remove any userId from the incoming data to prevent conflicts
+    if (data.userId) {
+      delete data.userId;
+    }
+    
+    // Validate required fields
+    const requiredFields = [
+      'professionalTitle', 'shortBio', 'skills', 'languages', 'experienceLevel',
+      'gigTitle', 'category', 'subcategory', 'gigDescription', 'deliveryTime', 'revisions',
+      'pricingModel', 'thumbnail'
+    ];
+    
+    const missingFields = requiredFields.filter(field => !data[field]);
+    
+    if (missingFields.length > 0) {
+      return NextResponse.json(
+        { 
+          error: `Missing required fields: ${missingFields.join(', ')}`,
+          missingFields 
+        },
+        { status: 400 }
+      );
+    }
+    
+    // Additional pricing model validation
+    if (data.pricingModel === 'single' && !data.singlePrice) {
+      return NextResponse.json(
+        { error: "Single price is required for single pricing model" },
+        { status: 400 }
+      );
+    }
+    
+    if (data.pricingModel === 'tiered') {
+      // Check if at least basic package is defined
+      if (!data.basicPackage || !data.basicPackage.price) {
+        return NextResponse.json(
+          { error: "Basic package with price is required for tiered pricing model" },
+          { status: 400 }
+        );
+      }
+    }
+    
     // Create the gig document using the user's database _id
     const newGig = new FreelanceGig({
       ...data,
-      userId: dbUser._id, // Use the MongoDB _id of the user
+      userId: userId,
       updatedAt: new Date()
     });
     
@@ -210,8 +121,11 @@ export async function POST(request: NextRequest) {
     
   } catch (error) {
     console.error("Error creating freelance gig:", error);
+    
+    // Provide more detailed error information
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Failed to create gig" },
+      { error: "Failed to create gig", details: errorMessage },
       { status: 500 }
     );
   }
