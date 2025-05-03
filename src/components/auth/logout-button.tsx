@@ -23,7 +23,7 @@ export function LogoutButton() {
       variant="outline"
       onClick={handleLogout}
       disabled={isLoading}
-      className="ml-auto  w-full bg-light text-white hover:bg-lightest hover:text-darker"
+      className="ml-auto  w-full bg-light border-none text-white hover:bg-lightest hover:text-darker"
     >
       {isLoading ? "Logging out..." : "Logout"}
     </Button>
