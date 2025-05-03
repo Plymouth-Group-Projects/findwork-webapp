@@ -1,4 +1,3 @@
-"use client";
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,6 @@ import { useSession } from "next-auth/react";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { FormDataType, PackageDetails } from "@/types/form-types";
-import { Separator } from "@/components/ui/separator";
 import { 
   FileText, 
   Briefcase, 

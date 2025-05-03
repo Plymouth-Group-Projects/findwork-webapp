@@ -4,13 +4,49 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { ConnectToDatabase } from "@/lib/mongoose";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { Job } from "@/models/job";
 import { Application } from "@/models/application";
 import { Notification } from "@/models/notification";
-import { Contract } from "@/models/contract";
+import { Contract, IContract } from "@/models/contract";
 import { FreelanceGig } from "@/models/freelance-gig";
 import { User } from "@/models/user";
+
+// Define types for dashboard data
+interface Milestone {
+  title: string;
+  description: string;
+  dueDate: Date;
+  amount: number;
+  status: 'pending' | 'completed' | 'cancelled';
+}
+
+interface ActivityItem {
+  type: string;
+  title: string;
+  description: string;
+  date: Date;
+  entityId: mongoose.Types.ObjectId | string;
+  read?: boolean;
+}
+
+interface UpcomingMilestone {
+  contractId: mongoose.Types.ObjectId | string;
+  contractTitle: string;
+  title: string;
+  description: string;
+  dueDate: Date;
+  amount: number;
+  currency: string;
+}
+
+// Define a type for user document returned from lean() query
+interface UserDocument {
+  _id: mongoose.Types.ObjectId;
+  role?: string;
+  profileViews?: number;
+  [key: string]: any;
+}
 
 // GET handler - Fetch all dashboard data for the current user
 export async function GET(request: NextRequest) {
@@ -89,8 +125,8 @@ export async function GET(request: NextRequest) {
       .sort({ interviewDate: 1 })
       .lean(),
 
-      // Get the user for profile details
-      User.findById(userObjectId).select('role profileViews').lean()
+      // Get the user for profile details and explicitly cast to UserDocument
+      User.findById(userObjectId).select('role profileViews').lean() as Promise<UserDocument>
     ]);
     
     // Calculate earnings from contracts (total and this month)
@@ -124,6 +160,9 @@ export async function GET(request: NextRequest) {
     const monthlySpending = thisMonthContracts
       .filter(contract => contract.clientId.toString() === userId)
       .reduce((sum, contract) => sum + contract.paymentAmount, 0);
+    
+    // Cast user to UserDocument to access properties safely
+    const userDoc = user as UserDocument;
     
     // Calculate dashboard statistics
     const dashboardStats = {
@@ -163,8 +202,8 @@ export async function GET(request: NextRequest) {
       },
       profile: {
         // Safely access properties with proper type checking
-        views: (user as any)?.profileViews || 0,
-        role: (user as any)?.role || 'Freelancer',
+        views: userDoc?.profileViews || 0,
+        role: userDoc?.role || 'Freelancer',
       },
       notifications: {
         total: notifications.length,
@@ -174,14 +213,14 @@ export async function GET(request: NextRequest) {
     };
 
     // Format recent activities based on actual data
-    const recentActivity = [
+    const recentActivity: ActivityItem[] = [
       // Job applications
       ...applications.slice(0, 3).map(app => ({
         type: 'application',
         title: `Job Application Submitted`,
         description: `${app.jobId?.title || 'Job'} at ${app.jobId?.company || 'Company'}`,
         date: app.appliedAt,
-        entityId: app._id,
+        entityId: app._id as mongoose.Types.ObjectId,
       })),
       
       // Interviews
@@ -190,7 +229,7 @@ export async function GET(request: NextRequest) {
         title: 'Interview Scheduled',
         description: `${interview.jobId?.title || 'Position'} at ${interview.jobId?.company || 'Company'}`,
         date: interview.interviewDate,
-        entityId: interview._id,
+        entityId: interview._id as mongoose.Types.ObjectId,
       })),
       
       // Recent contracts
@@ -202,7 +241,7 @@ export async function GET(request: NextRequest) {
                'Contract Updated',
         description: contract.title,
         date: contract.updatedAt || contract.createdAt,
-        entityId: contract._id,
+        entityId: contract._id as mongoose.Types.ObjectId,
       })),
       
       // Recent notifications
@@ -211,20 +250,20 @@ export async function GET(request: NextRequest) {
         title: notification.title,
         description: notification.message,
         date: notification.createdAt,
-        entityId: notification._id,
+        entityId: notification._id as mongoose.Types.ObjectId,
         read: notification.read,
       })),
     ]
-    .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Sort by date descending
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Sort by date descending
     .slice(0, 6); // Limit to 6 items
 
     // Get upcoming milestones from active contracts
-    const upcomingMilestones = contracts
+    const upcomingMilestones: UpcomingMilestone[] = contracts
       .filter(contract => contract.status === 'active' && contract.milestones && contract.milestones.length > 0)
       .flatMap(contract => 
         contract.milestones
-          .filter((milestone: any) => milestone.status === 'pending')
-          .map((milestone: any) => ({
+          .filter((milestone: Milestone) => milestone.status === 'pending')
+          .map((milestone: Milestone) => ({
             contractId: contract._id,
             contractTitle: contract.title,
             title: milestone.title,
@@ -234,7 +273,7 @@ export async function GET(request: NextRequest) {
             currency: contract.currency,
           }))
       )
-      .sort((a: any, b: any) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()) // Sort by due date ascending
+      .sort((a: UpcomingMilestone, b: UpcomingMilestone) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()) // Sort by due date ascending
       .slice(0, 5); // Limit to 5 upcoming milestones
 
     // Return the full dashboard data

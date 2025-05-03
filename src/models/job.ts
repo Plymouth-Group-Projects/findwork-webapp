@@ -7,6 +7,8 @@ export interface IJob extends Document {
   location: string;
   description: string;
   requirements: string;
+  responsibilities?: string;
+  benefits?: string;
   salary: {
     min: number;
     max: number;
@@ -16,10 +18,15 @@ export interface IJob extends Document {
   industry: string;
   employerId: mongoose.Types.ObjectId;
   applicationDeadline: Date;
-  experienceLevel: 'entry' | 'mid' | 'senior' | 'executive';
+  experienceLevel: 'entry' | 'intermediate' | 'expert' | 'senior';
   skills: string[];
   applicantCount: number;
   status: 'active' | 'closed' | 'draft';
+  remoteOption?: 'onsite' | 'remote' | 'hybrid';
+  applicationMethod?: 'email' | 'website' | 'phone';
+  applicationEmail?: string;
+  applicationUrl?: string;
+  contactPhone?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -49,6 +56,12 @@ const JobSchema = new Schema<IJob>(
     requirements: {
       type: String,
       required: [true, 'Job requirements are required'],
+    },
+    responsibilities: {
+      type: String,
+    },
+    benefits: {
+      type: String,
     },
     salary: {
       min: {
@@ -83,7 +96,7 @@ const JobSchema = new Schema<IJob>(
     experienceLevel: {
       type: String,
       required: [true, 'Experience level is required'],
-      enum: ['entry', 'mid', 'senior', 'executive'],
+      enum: ['entry', 'intermediate', 'expert', 'senior'],
     },
     skills: [{
       type: String,
@@ -96,6 +109,23 @@ const JobSchema = new Schema<IJob>(
       type: String,
       enum: ['active', 'closed', 'draft'],
       default: 'active',
+    },
+    remoteOption: {
+      type: String,
+      enum: ['onsite', 'remote', 'hybrid'],
+    },
+    applicationMethod: {
+      type: String,
+      enum: ['email', 'website', 'phone'],
+    },
+    applicationEmail: {
+      type: String,
+    },
+    applicationUrl: {
+      type: String,
+    },
+    contactPhone: {
+      type: String,
     },
   },
   {

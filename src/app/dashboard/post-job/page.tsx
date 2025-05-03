@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,14 +25,18 @@ import {
   Users,
   BookOpen,
   Check,
+  Loader2,
+  Shield,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useToast, toast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useSession } from "next-auth/react";
 
 // Define job data interface
 interface JobFormData {
+  _id?: string;
   title: string;
   company: string;
   location: string;
@@ -55,13 +59,20 @@ interface JobFormData {
   contactPhone: string;
   remoteOption: string;
   applicationMethod: string;
+  industry?: string;
+  status?: 'active' | 'closed' | 'draft';
 }
 
 export default function PostJobPage() {
+  const { data: session, status } = useSession();
   const { toasts, dismiss } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const jobId = searchParams?.get('id');
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   
   // Job form state
   const [jobData, setJobData] = useState<JobFormData>({
@@ -84,7 +95,80 @@ export default function PostJobPage() {
     contactPhone: "",
     remoteOption: "onsite",
     applicationMethod: "email",
+    industry: "",
+    status: "active"
   });
+
+  // Redirect unauthenticated users to login
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/login?callbackUrl=/dashboard/post-job");
+    }
+  }, [status, router]);
+
+  // Fetch job data if in edit mode
+  useEffect(() => {
+    if (jobId && status === "authenticated") {
+      setIsEditMode(true);
+      setIsLoading(true);
+      
+      // Fetch the job data
+      const fetchJob = async () => {
+        try {
+          const response = await fetch(`/api/job-listing?id=${jobId}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch job data');
+          }
+          
+          const data = await response.json();
+          
+          if (data.jobs && data.jobs.length > 0) {
+            const job = data.jobs[0];
+            
+            // Format the data to match our form structure
+            setJobData({
+              _id: job._id,
+              title: job.title || "",
+              company: job.company || "",
+              location: job.location || "",
+              jobType: job.jobType || "full-time",
+              employmentType: job.employmentType || "permanent",
+              category: job.industry || "",
+              industry: job.industry || "",
+              experienceLevel: job.experienceLevel || "intermediate",
+              salaryRange: { 
+                min: job.salary?.min?.toString() || "", 
+                max: job.salary?.max?.toString() || "" 
+              },
+              salaryDisplayOption: job.salary?.min ? "show-range" : "hide",
+              deadline: job.applicationDeadline ? new Date(job.applicationDeadline).toISOString().split('T')[0] : "",
+              description: job.description || "",
+              requirements: job.requirements || "",
+              responsibilities: job.responsibilities || "",
+              benefits: job.benefits || "",
+              applicationEmail: job.applicationEmail || "",
+              applicationUrl: job.applicationUrl || "",
+              contactPhone: job.contactPhone || "",
+              remoteOption: job.remoteOption || "onsite",
+              applicationMethod: job.applicationMethod || "email",
+              status: job.status || "active"
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching job:", error);
+          toast({
+            title: "Error",
+            description: "Failed to load job details. Please try again.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchJob();
+    }
+  }, [jobId, status]);
 
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -113,6 +197,11 @@ export default function PostJobPage() {
   // Handle select dropdown changes
   const handleSelectChange = (name: keyof JobFormData, value: string) => {
     setJobData((prev) => ({ ...prev, [name]: value }));
+    
+    // If changing category, also update industry field
+    if (name === "category") {
+      setJobData((prev) => ({ ...prev, industry: value }));
+    }
   };
 
   // Move to next step
@@ -132,34 +221,50 @@ export default function PostJobPage() {
   };
 
   // Handle job posting submission
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     
     try {
-      // This would be replaced with an actual API call in a real app
-      // const response = await fetch('/api/jobs/create', { 
-      //   method: 'POST', 
-      //   headers: { 'Content-Type': 'application/json' }, 
-      //   body: JSON.stringify(jobData) 
-      // });
+      // Prepare data for API submission
+      const apiData = {
+        ...jobData,
+        industry: jobData.category, // Ensure industry is set from category
+        salary: {
+          min: jobData.salaryDisplayOption === 'show-range' ? parseInt(jobData.salaryRange.min) || 0 : null,
+          max: jobData.salaryDisplayOption === 'show-range' ? parseInt(jobData.salaryRange.max) || 0 : null,
+          currency: 'LKR'
+        },
+        deadline: jobData.deadline
+      };
       
-      // Simulate API call success for demo
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Call the API endpoint
+      const response = await fetch('/api/post-job', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify(apiData) 
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save job');
+      }
+      
+      const result = await response.json();
       
       toast({
         title: "Success!",
-        description: "Your job has been posted successfully.",
+        description: isEditMode ? "Job listing updated successfully." : "Your job has been posted successfully.",
       });
       
       // Navigate back to dashboard
       router.push("/dashboard/job-listing");
       
     } catch (error) {
-      console.error("Error posting job:", error);
+      console.error("Error saving job:", error);
       toast({
         title: "Error",
-        description: "Failed to post job. Please try again.",
+        description: `Failed to ${isEditMode ? 'update' : 'post'} job. Please try again.`,
         variant: "destructive",
       });
     } finally {
@@ -167,12 +272,67 @@ export default function PostJobPage() {
     }
   };
 
+  // If loading authentication state, show loading spinner
+  if (status === "loading") {
+    return (
+      <div className="container px-4 mx-auto py-10 flex justify-center items-center" style={{ minHeight: "60vh" }}>
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-light" />
+          <p className="mt-4 text-darker">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not authenticated, show access restricted message
+  if (status === "unauthenticated") {
+    return (
+      <div className="container px-4 mx-auto py-10 flex justify-center items-center" style={{ minHeight: "60vh" }}>
+        <Card className="max-w-md w-full border-0 shadow-md text-center">
+          <CardHeader className="space-y-1">
+            <div className="flex justify-center mb-4">
+              <Shield className="h-12 w-12 text-light" />
+            </div>
+            <CardTitle className="text-2xl">Access Restricted</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-darker/70 mb-4">You need to be signed in to access this page.</p>
+            <Button 
+              className="w-full bg-light hover:bg-light/90 text-white"
+              onClick={() => router.push("/auth/login?callbackUrl=/dashboard/post-job")}
+            >
+              Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show loading indicator while fetching job data
+  if (isLoading) {
+    return (
+      <div className="container px-4 mx-auto py-10 flex justify-center items-center" style={{ minHeight: "60vh" }}>
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-light" />
+          <p className="mt-4 text-darker">Loading job details...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container px-4 mx-auto py-10">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-darker mb-2">Post a New Job</h1>
-          <p className="text-darker/70">Create a job listing to find the perfect candidate</p>
+          <h1 className="text-3xl font-bold text-darker mb-2">
+            {isEditMode ? "Edit Job Listing" : "Post a New Job"}
+          </h1>
+          <p className="text-darker/70">
+            {isEditMode 
+              ? "Update your job listing details" 
+              : "Create a job listing to find the perfect candidate"}
+          </p>
         </div>
 
         {/* Progress Steps */}
@@ -270,7 +430,7 @@ export default function PostJobPage() {
                         <SelectTrigger id="category" className="border-gray-300">
                           <SelectValue placeholder="Select a category" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="text-darker bg-white">
                           <SelectGroup>
                             <SelectLabel>Categories</SelectLabel>
                             <SelectItem value="information-technology">Information Technology</SelectItem>
@@ -345,7 +505,7 @@ export default function PostJobPage() {
                         <SelectTrigger id="experienceLevel" className="border-gray-300">
                           <SelectValue placeholder="Select experience level" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="text-darker bg-white">
                           <SelectItem value="entry">Entry Level</SelectItem>
                           <SelectItem value="intermediate">Intermediate</SelectItem>
                           <SelectItem value="expert">Expert</SelectItem>
@@ -368,6 +528,25 @@ export default function PostJobPage() {
                       </div>
                     </div>
                   </div>
+
+                  {isEditMode && (
+                    <div className="space-y-2">
+                      <Label htmlFor="status" className="text-darker">Job Status</Label>
+                      <Select 
+                        value={jobData.status} 
+                        onValueChange={(value: 'active' | 'closed' | 'draft') => setJobData(prev => ({ ...prev, status: value }))}
+                      >
+                        <SelectTrigger id="status" className="border-gray-300">
+                          <SelectValue placeholder="Select job status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="active">Active</SelectItem>
+                          <SelectItem value="closed">Closed</SelectItem>
+                          <SelectItem value="draft">Draft</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
                   <Separator className="my-4" />
 
@@ -664,11 +843,16 @@ export default function PostJobPage() {
               ) : (
                 <Button 
                   type="button" 
-                  onClick={() => handleSubmit(new Event('click') as any)}
+                  onClick={handleSubmit}
                   disabled={isSubmitting}
                   className="bg-light hover:bg-light/90 text-white"
                 >
-                  {isSubmitting ? "Posting..." : "Post Job Now"}
+                  {isSubmitting ? 
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" /> 
+                      {isEditMode ? "Updating..." : "Posting..."}
+                    </> : 
+                    isEditMode ? "Update Job" : "Post Job Now"}
                 </Button>
               )}
             </CardFooter>

@@ -12,6 +12,17 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { LogoutButton } from "./auth/logout-button";
+import { FaUser } from "react-icons/fa";
 
 // Navigation items array for easier management
 const navigationItems = [
@@ -27,6 +38,7 @@ export default function NavBar() {
   const navRef = React.useRef<HTMLDivElement>(null);
   const menuRef = React.useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   // Handle clicks outside the menu
   React.useEffect(() => {
@@ -66,6 +78,51 @@ export default function NavBar() {
     );
   };
 
+  // User account menu for desktop
+  const UserAccountMenu = () => {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="flex items-center p-0 rounded-full gap-2 hover:bg-transparent">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || "User"} />
+              <AvatarFallback>
+                <FaUser className="text-gray-400" />
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56 bg-white text-darker border-none">
+          <div className="flex flex-col p-2">
+            <p className="font-medium">{session?.user?.name}</p>
+            <p className="text-xs text-muted-foreground truncate">{session?.user?.email}</p>
+          </div>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+            Dashboard
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard/profile">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+            </svg>
+            Profile
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <div className="p-2">
+            <LogoutButton />
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
+
   return (
     <>
       {isMenuOpen && (
@@ -98,16 +155,20 @@ export default function NavBar() {
                 
                 <div className="flex justify-end xl:me-10 lg:scale-90 xl:scale-100 col-span-1">
                   <NavigationMenuItem>
-                    <Link href="/auth/login" legacyBehavior passHref>
-                      <NavigationMenuLink
-                        className={navigationMenuTriggerStyle()}
-                      >
-                        <Button className="bg-light scale-90 font-lato tracking-widest text-base hover:bg-lightest hover:text-darker">
-                          <SiAegisauthenticator className="me-1" />
-                          LOGIN
-                        </Button>
-                      </NavigationMenuLink>
-                    </Link>
+                    {session ? (
+                      <UserAccountMenu />
+                    ) : (
+                      <Link href="/auth/login" legacyBehavior passHref>
+                        <NavigationMenuLink
+                          className={navigationMenuTriggerStyle()}
+                        >
+                          <Button className="bg-light scale-90 font-lato tracking-widest text-base hover:bg-lightest hover:text-darker">
+                            <SiAegisauthenticator className="me-1" />
+                            LOGIN
+                          </Button>
+                        </NavigationMenuLink>
+                      </Link>
+                    )}
                   </NavigationMenuItem>
                 </div>
               </div>
@@ -240,18 +301,58 @@ export default function NavBar() {
                   );
                 })}
                 
-                {/* Login button as dropdown item */}
+                {/* Login button or User account as dropdown item */}
                 <div className="border-t border-darker pt-2 my-2">
-                  <Link
-                    href="/auth/login"
-                    className="flex items-center justify-center px-4 py-2 rounded-md transition-colors animate-fade-in bg-light"
-                    onClick={handleNavigate}
-                  >
-                    <div className="flex items-center">
-                      <SiAegisauthenticator className="me-2"/>
-                      <span className="tracking-widest">LOGIN</span>
+                  {session ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center px-4 py-3">
+                        <Avatar className="h-8 w-8 mr-3">
+                          <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || "User"} />
+                          <AvatarFallback>
+                            <FaUser className="text-gray-400" />
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium">{session.user?.name}</span>
+                          <span className="text-xs text-gray-400 truncate">{session.user?.email}</span>
+                        </div>
+                      </div>
+                      <Link 
+                        href="/dashboard" 
+                        className="flex items-center px-4 py-2 text-white hover:text-lightest"
+                        onClick={handleNavigate}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                        </svg>
+                        Dashboard
+                      </Link>
+                      <Link 
+                        href="/dashboard/profile" 
+                        className="flex items-center px-4 py-2 text-white hover:text-lightest"
+                        onClick={handleNavigate}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                        </svg>
+                        Profile
+                      </Link>
+                      <div className="px-4 py-2">
+                        <LogoutButton />
+                      </div>
                     </div>
-                  </Link>
+                  ) : (
+                    <Link
+                      href="/auth/login"
+                      className="flex items-center justify-center px-4 py-2 rounded-md transition-colors animate-fade-in bg-light"
+                      onClick={handleNavigate}
+                    >
+                      <div className="flex items-center">
+                        <SiAegisauthenticator className="me-2"/>
+                        <span className="tracking-widest">LOGIN</span>
+                      </div>
+                    </Link>
+                  )}
                 </div>
               </div>
             )}

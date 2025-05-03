@@ -50,12 +50,12 @@ export function DashboardSidebar({ session }: DashboardSidebarProps) {
   // Navigation items
   const navigationItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/job-listing", label: "Job Listings", icon: Briefcase, badge: "12" },
-    { href: "/dashboard/jobs-applied", label: "Applications", icon: ClipboardCheck, badge: "3" },
+    { href: "/dashboard/job-listing", label: "Job Listings", icon: Briefcase},
+    { href: "/dashboard/jobs-applied", label: "Applications", icon: ClipboardCheck},
     { href: "/dashboard/collaborations", label: "Collaborations", icon: Users },
     { href: "/dashboard/contracts", label: "Contracts", icon: FileText },
     { href: "/dashboard/finance", label: "Finance", icon: DollarSign },
-    { href: "/dashboard/notifications", label: "Notifications", icon: Bell, badge: "8" },
+    { href: "/dashboard/notifications", label: "Notifications", icon: Bell},
   ]
 
   const bottomNavItems = [
@@ -109,14 +109,6 @@ export function DashboardSidebar({ session }: DashboardSidebarProps) {
                   >
                     <item.icon className="h-5 w-5" />
                     <span className="group-data-[state=collapsed]:hidden">{item.label}</span>
-                    {item.badge && (
-                      <Badge 
-                        className="ml-auto bg-light text-white group-data-[state=collapsed]:hidden"
-                        variant="default"
-                      >
-                        {item.badge}
-                      </Badge>
-                    )}
                   </Link>
                 </SidebarMenuItem>
               ))}
