@@ -7,29 +7,60 @@ export interface PackageDetails {
   includes: string;
 }
 
+export interface EmployerDetails {
+  employer: string;
+  duration: string;
+  role: string;
+}
+
+export interface EducationDetails {
+  institution: string;
+  qualification: string;
+  yearCompleted: number;
+}
+
+export interface CertificationDetails {
+  title: string;
+  issuer: string;
+  year: number;
+}
+
+export interface ContactDetails {
+  phone: string;
+  email: string;
+  address: string;
+}
+
 export interface FormDataType {
+  // Personal Information
+  name: string;
+  gender: string;
+  dob: string;
+  imageUrl: string;
+  profileTitle: string; // Title to identify different profiles from the same user
+  
+  // Contact Information
+  contact: ContactDetails;
+  
   // Professional Information
-  professionalTitle: string;
-  shortBio: string;
-  skills: string;
-  languages: string;
-  experienceLevel: string;
-  
-  // Gig Details
-  gigTitle: string;
+  languagesSpoken: string[];
+  bio: string;
   category: string;
-  subcategory: string;
-  gigDescription: string;
-  searchTags: string;
-  deliveryTime: string;
-  revisions: string;
+  topSkills: string[];
+  level: string;
+  availability: string;
+  salary: string;
+  jobsCompleted: number;
   
-  // Pricing
-  pricingModel: 'single' | 'tiered';
-  singlePrice?: string;
-  basicPackage: PackageDetails;
-  standardPackage: PackageDetails;
-  premiumPackage: PackageDetails;
+  // Experience Details
+  experience: {
+    years: number;
+    previousEmployers: EmployerDetails[];
+  };
+  
+  // Education & Certifications
+  education: EducationDetails[];
+  certifications: CertificationDetails[];
   
   // Media & Requirements
   portfolioImages: string[];

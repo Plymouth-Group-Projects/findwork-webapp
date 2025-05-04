@@ -25,7 +25,6 @@ import {
   UserCircle
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
 import { Session } from "next-auth"
 import { LogoutButton } from "./auth/logout-button"
 
@@ -51,9 +50,8 @@ export function DashboardSidebar({ session }: DashboardSidebarProps) {
   const navigationItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/job-listing", label: "Job Listings", icon: Briefcase},
-    { href: "/dashboard/jobs-applied", label: "Applications", icon: ClipboardCheck},
-    { href: "/dashboard/collaborations", label: "Collaborations", icon: Users },
-    { href: "/dashboard/contracts", label: "Contracts", icon: FileText },
+    { href: "/dashboard/collaboration", label: "Collaborations", icon: Users },
+    /* { href: "/dashboard/contracts", label: "Contracts", icon: FileText }, */
     { href: "/dashboard/finance", label: "Finance", icon: DollarSign },
     { href: "/dashboard/notifications", label: "Notifications", icon: Bell},
   ]
@@ -83,7 +81,7 @@ export function DashboardSidebar({ session }: DashboardSidebarProps) {
   return (
     <Sidebar 
       className="w-[80px] md:w-[250px] lg:w-[300px] border-r border-gray-200 dark:border-gray-800"
-      collapsible={`${window.innerWidth < 1024 ? "icon" : "offcanvas"}`}
+      collapsible="icon"
       variant="sidebar"
     >
       <SidebarContent className="flex flex-col pt-20 h-full">

@@ -216,7 +216,7 @@ export default function JobListingPage() {
           <p className="text-white/70">Manage your posted job opportunities</p>
         </div>
         <Button 
-          onClick={() => router.push("/dashboard/post-job")} 
+          onClick={() => router.push("/dashboard/job-listing/post-job")} 
           className="bg-light hover:bg-light/90 text-white"
         >
           <Plus className="h-4 w-4 mr-2" /> Post New Job
@@ -317,7 +317,7 @@ export default function JobListingPage() {
                             size="sm" 
                             className="h-8 w-8 p-0"
                             title="Edit Job"
-                            onClick={() => router.push(`/dashboard/post-job?id=${job._id}`)}
+                            onClick={() => router.push(`/dashboard/job-listing/post-job?id=${job._id}`)}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>

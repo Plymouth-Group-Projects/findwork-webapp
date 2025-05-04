@@ -9,7 +9,7 @@ import { Job } from "@/models/job";
 import { Application } from "@/models/application";
 import { Notification } from "@/models/notification";
 import { Contract, IContract } from "@/models/contract";
-import { FreelanceGig } from "@/models/freelance-gig";
+import { WorkerProfile } from "@/models/freelance-collab";
 import { User } from "@/models/user";
 
 // Define types for dashboard data
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
     const [
       applications,
       postedJobs,
-      freelanceGigs,
+      workerProfiles,
       notifications,
       contracts,
       interviews,
@@ -97,8 +97,8 @@ export async function GET(request: NextRequest) {
       Job.find({ employerId: userObjectId })
         .lean(),
       
-      // Get freelance gigs created by user
-      FreelanceGig.find({ userId: userObjectId })
+      // Get worker profiles created by user
+      WorkerProfile.find({ userId: userObjectId })
         .lean(),
       
       // Get user notifications (limit to 10 most recent)
@@ -181,10 +181,10 @@ export async function GET(request: NextRequest) {
         applicantsCount: postedJobs.reduce((sum, job) => sum + (job.applicantsCount || 0), 0),
       },
       freelance: {
-        total: freelanceGigs.length,
-        active: freelanceGigs.filter(gig => gig.status === 'active').length,
-        pending: freelanceGigs.filter(gig => gig.status === 'pending').length,
-        inactive: freelanceGigs.filter(gig => gig.status === 'inactive').length,
+        total: workerProfiles.length,
+        active: workerProfiles.filter(profile => profile.status === 'active').length,
+        pending: workerProfiles.filter(profile => profile.status === 'pending').length,
+        inactive: workerProfiles.filter(profile => profile.status === 'inactive').length,
       },
       contracts: {
         total: contracts.length,
@@ -287,7 +287,7 @@ export async function GET(request: NextRequest) {
       stats: dashboardStats,
       applications: applications.slice(0, 5), // Limit to 5 most recent
       postedJobs: postedJobs.slice(0, 5), // Limit to 5 most recent
-      freelanceGigs: freelanceGigs.slice(0, 5), // Limit to 5 most recent
+      freelanceGigs: workerProfiles.slice(0, 5), // Limit to 5 most recent
       notifications: notifications.slice(0, 5), // Limit to 5 most recent
       contracts: contracts.slice(0, 5), // Limit to 5 most recent
       interviews: interviews.slice(0, 5), // Limit to 5 most recent

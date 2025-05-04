@@ -102,7 +102,7 @@ export default function PostJobPage() {
   // Redirect unauthenticated users to login
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/auth/login?callbackUrl=/dashboard/post-job");
+      router.push("/auth/login?callbackUrl=/dashboard/job-listing/post-job");
     }
   }, [status, router]);
 
@@ -239,7 +239,7 @@ export default function PostJobPage() {
       };
       
       // Call the API endpoint
-      const response = await fetch('/api/post-job', { 
+      const response = await fetch('/api/job-listing/post-job', { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
         body: JSON.stringify(apiData) 
@@ -299,7 +299,7 @@ export default function PostJobPage() {
             <p className="text-darker/70 mb-4">You need to be signed in to access this page.</p>
             <Button 
               className="w-full bg-light hover:bg-light/90 text-white"
-              onClick={() => router.push("/auth/login?callbackUrl=/dashboard/post-job")}
+              onClick={() => router.push("/auth/login?callbackUrl=/dashboard/job-listing/post-job")}
             >
               Sign In
             </Button>

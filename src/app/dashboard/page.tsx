@@ -1,4 +1,3 @@
-
 import { getServerSession } from 'next-auth/next';
 import { redirect } from 'next/navigation';
 import { authOptions } from '@/lib/auth';
@@ -217,16 +216,16 @@ export default async function DashboardPage() {
           {/* Job Seeker Card */}
           <Card className="border-0 shadow-md bg-white hover:shadow-lg transition-all">
             <Link href="/job-hub" className="block h-full">
-              <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-400 text-white rounded-t-lg">
+              <CardHeader className="bg-gradient-to-r from-light to-darkest text-white rounded-t-lg">
                 <CardTitle>Find Jobs</CardTitle>
                 <CardDescription className="text-white/90">Apply to jobs that match your skills</CardDescription>
               </CardHeader>
               <CardContent className="pt-5 flex items-center justify-between">
                 <div className="flex items-center">
-                  <Briefcase className="h-5 w-5 mr-2 text-blue-500" />
+                  <Briefcase className="h-5 w-5 mr-2 text-darker" />
                   <span className="text-sm text-darker">{stats.applications.total} Applications</span>
                 </div>
-                <Button variant="outline" size="sm" className="border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white">
+                <Button variant="outline" size="sm" className="border-darker text-darker hover:bg-darker hover:text-white">
                   Browse Jobs
                 </Button>
               </CardContent>
@@ -235,17 +234,17 @@ export default async function DashboardPage() {
 
           {/* Job Poster Card */}
           <Card className="border-0 shadow-md bg-white hover:shadow-lg transition-all">
-            <Link href="/dashboard/post-job" className="block h-full">
-              <CardHeader className="bg-gradient-to-r from-emerald-600 to-emerald-400 text-white rounded-t-lg">
+            <Link href="/dashboard/job-listing/post-job" className="block h-full">
+              <CardHeader className="bg-gradient-to-r from-light to-darkest text-white rounded-t-lg">
                 <CardTitle>Post Jobs</CardTitle>
                 <CardDescription className="text-white/90">Create job listings for your business</CardDescription>
               </CardHeader>
               <CardContent className="pt-5 flex items-center justify-between">
                 <div className="flex items-center">
-                  <FileText className="h-5 w-5 mr-2 text-emerald-500" />
+                  <FileText className="h-5 w-5 mr-2 text-darker" />
                   <span className="text-sm text-darker">{stats.jobs.total} Posted Jobs</span>
                 </div>
-                <Button variant="outline" size="sm" className="border-emerald-500 text-emerald-500 hover:bg-emerald-500 hover:text-white">
+                <Button variant="outline" size="sm" className="border-darker text-darker hover:bg-darker hover:text-white">
                   Create Job
                 </Button>
               </CardContent>
@@ -254,17 +253,17 @@ export default async function DashboardPage() {
 
           {/* Freelancer Card */}
           <Card className="border-0 shadow-md bg-white hover:shadow-lg transition-all">
-            <Link href="/dashboard/skill-post" className="block h-full">
-              <CardHeader className="bg-gradient-to-r from-amber-600 to-amber-400 text-white rounded-t-lg">
+            <Link href="/dashboard/collaboration/post-collab" className="block h-full">
+              <CardHeader className="bg-gradient-to-r from-light to-darkest text-white rounded-t-lg">
                 <CardTitle>Freelance</CardTitle>
                 <CardDescription className="text-white/90">Create and manage your freelance services</CardDescription>
               </CardHeader>
               <CardContent className="pt-5 flex items-center justify-between">
                 <div className="flex items-center">
-                  <Zap className="h-5 w-5 mr-2 text-amber-500" />
-                  <span className="text-sm text-darker">{stats.freelance.active} Active Gigs</span>
+                  <Zap className="h-5 w-5 mr-2 text-darker" />
+                  <span className="text-sm text-darker">{stats.freelance.active} Active Collabs</span>
                 </div>
-                <Button variant="outline" size="sm" className="border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-white">
+                <Button variant="outline" size="sm" className="border-darker text-darker hover:bg-darker hover:text-white">
                   Post Service
                 </Button>
               </CardContent>
@@ -343,7 +342,9 @@ export default async function DashboardPage() {
             </CardContent>
             <CardFooter className="border-t border-light/50">
               <Link href="/dashboard/notifications" className="w-full mt-6">
-                <Button variant="outline" size="sm" className="w-full text-darker border-darker hover:bg-light hover:text-white transition-colors">View All Activity</Button>
+                <Button variant="outline" size="sm" className="w-full text-darker border-darker hover:bg-light hover:text-white transition-colors">
+                  View All Activity
+                  </Button>
               </Link>
             </CardFooter>
           </Card>
@@ -432,7 +433,9 @@ export default async function DashboardPage() {
           </CardContent>
           <CardFooter className="border-t border-light/50">
             <Link href="/dashboard/contracts" className="w-full mt-6">
-              <Button variant="outline" size="sm" className="w-full text-darker border-darker transition-colors">Manage All Contracts</Button>
+              <Button variant="outline" size="sm" className="w-full text-darker border-darker hover:bg-light hover:text-white transition-colors">
+                Manage All Contracts
+                </Button>
             </Link>
           </CardFooter>
         </Card>
@@ -505,7 +508,7 @@ export default async function DashboardPage() {
           </CardContent>
           <CardFooter className="border-t border-light/50">
             <Link href="/dashboard/notifications" className="w-full mt-6">
-              <Button variant="outline" size="sm" className="w-full text-darker border-darker transition-colors">
+              <Button variant="outline" size="sm" className="w-full text-darker hover:bg-light hover:text-white border-darker transition-colors">
                 View All Notifications
               </Button>
             </Link>
