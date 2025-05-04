@@ -15,7 +15,7 @@ export default function SkillPost() {
     // Check if the user is authenticated
     if (status === "unauthenticated") {
       // Redirect to login if not authenticated
-      router.push("/auth/login?callbackUrl=/dashboard/skill-post");
+      router.push("/auth/login?callbackUrl=/dashboard/post-collab");
     } else if (status === "authenticated") {
       setIsLoading(false);
     }

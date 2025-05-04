@@ -22,7 +22,7 @@ const StepFourMediaRequirements: React.FC<MediaRequirementsProps> = ({
       {/* Portfolio Images Section */}
       <div className="space-y-3">
         <Label htmlFor="portfolioImages" className="text-darker font-medium">
-          Portfolio Images
+        Portfolio Images
         </Label>
         <p className="text-sm text-gray-500">
           Upload high-quality images showcasing your work samples and projects

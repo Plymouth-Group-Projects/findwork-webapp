@@ -10,11 +10,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { SlArrowRight } from "react-icons/sl";
+import { Eye, Trash2, Edit } from "lucide-react";
 
-interface FreelancerCardProps {
-  freelancer: {
-    id: number;
+interface CollaborationCardProps {
+  collaboration: {
+    id: string | number;
     imageUrl: string;
     Name: string;
     availability: string;
@@ -26,9 +26,19 @@ interface FreelancerCardProps {
   };
   isActive: boolean;
   index: number;
+  onPreview: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
-export default function FreelancerCard({ freelancer, isActive, index }: FreelancerCardProps) {
+export default function CollaborationCard({ 
+  collaboration, 
+  isActive, 
+  index,
+  onPreview,
+  onEdit,
+  onDelete
+}: CollaborationCardProps) {
   return (
     <Card
       className={`
@@ -43,8 +53,8 @@ export default function FreelancerCard({ freelancer, isActive, index }: Freelanc
     >
       <CardHeader className="p-0 relative h-[250px] overflow-hidden rounded-t-lg mb-3">
         <Image
-          src={freelancer.imageUrl}
-          alt={freelancer.Name}
+          src={collaboration.imageUrl}
+          alt={collaboration.Name}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           fill={true}
           className="object-cover object-center"
@@ -54,29 +64,29 @@ export default function FreelancerCard({ freelancer, isActive, index }: Freelanc
       <CardContent>
         <CardTitle className="font-lato">
           <span className="text-xl font-semibold uppercase">
-            {freelancer.Name}
+            {collaboration.Name}
           </span>
           <span className="text-sm absolute right-0 top-3 bg-lightest pe-5 ps-3 py-0.5 rounded-s-md">
-            {freelancer.availability}
+            {collaboration.availability}
           </span>
           <span
             className={`text-xs rounded-lg font-base px-3 py-[3px] absolute right-3 mt-1 tracking-wide  
               ${
-                freelancer.level === "Intermediate"
+                collaboration.level === "Intermediate"
                   ? "bg-lightest text-white"
-                  : freelancer.level === "Beginner"
+                  : collaboration.level === "Beginner"
                     ? "bg-slate-300"
-                    : freelancer.level === "Expert"
+                    : collaboration.level === "Expert"
                       ? "bg-darker text-white"
-                      : freelancer.level === "Verified"
+                      : collaboration.level === "Verified"
                         ? "bg-darkest px-5 py-1 text-yellow-400 outline outline-1"
                         : ""
               }`}
           >
-            {freelancer.level}
+            {collaboration.level}
           </span>
           <p className="text-xs font-normal">
-            {freelancer.address}
+            {collaboration.address}
           </p>
         </CardTitle>
         <CardDescription>
@@ -84,34 +94,53 @@ export default function FreelancerCard({ freelancer, isActive, index }: Freelanc
             Top Skills
           </h2>
           <ul className="grid grid-cols-3 mt-1 gap-4 ms-1">
-            {freelancer.topSkills.map((skill, index) => (
+            {collaboration.topSkills.map((skill, index) => (
               <li key={index} className="border-light border-[1px] rounded-2xl px-1 py-1 text-center text-sm bg-lightest/25">{skill}</li>
             ))}
           </ul>
           <p className="text-sm font-semibold mt-4">
-            {freelancer.salary}
+            LKR {collaboration.salary}
           </p>
           <p className="text-xs">
-            {freelancer.jobsCompleted} Jobs Completed.
+            {collaboration.jobsCompleted} Jobs Completed.
           </p>
         </CardDescription>
-        <a href="#">
+        <div className="absolute bottom-5 left-5 right-5 flex space-x-2">
           <Button
+            onClick={onPreview}
             className={`
-              absolute bottom-5 left-5 right-5 font-medium 
-              bg-light text-white hover:bg-lightest hover:text-darker
-              py-2 shadow-sm transform group
+              flex-1 font-medium bg-light text-white hover:bg-lightest hover:text-darker
+              py-2 shadow-sm transform group transition-all duration-300 ease-in-out
+              ${isActive ? "opacity-100" : "opacity-0"}
+            `}
+          >
+            <Eye className="mr-1 h-4 w-4" />
+            <span>Preview</span>
+          </Button>
+          <Button
+            onClick={onEdit}
+            className={`
+              flex-1 font-medium bg-light text-white hover:bg-lightest hover:text-darker
+              py-2 shadow-sm transform group transition-all duration-300 ease-in-out
+              ${isActive ? "opacity-100" : "opacity-0"}
+            `}
+          >
+            <Edit className="mr-1 h-4 w-4" />
+            <span>Edit</span>
+          </Button>
+          <Button
+            onClick={onDelete}
+            variant="destructive"
+            className={`
+              flex-1 font-medium py-2 shadow-sm transform group
               transition-all duration-300 ease-in-out
               ${isActive ? "opacity-100" : "opacity-0"}
             `}
           >
-            <span className="transition-transform duration-300 group-hover:translate-x-1">Hire Now</span>
-            <SlArrowRight 
-              className="ml-2 my-auto transition-transform duration-300 group-hover:translate-x-1" 
-              size={14} 
-            />
+            <Trash2 className="mr-1 h-4 w-4" />
+            <span>Delete</span>
           </Button>
-        </a>
+        </div>
       </CardContent>
     </Card>
   );

@@ -1,54 +1,82 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useSession } from "next-auth/react";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { FormDataType, PackageDetails } from "@/types/form-types";
+import { FormDataType, EmployerDetails, EducationDetails, CertificationDetails } from "@/types/form-types";
 import { 
-  FileText, 
   Briefcase, 
   Image,
-  DollarSign,
-  Check
+  Check,
+  User,
+  GraduationCap,
+  AlertCircle
 } from "lucide-react";
 
 // Import step components
-import StepOneProfessionalInfo from "@/components/skill-post/professional-info";
-import StepTwoCollabDetails from "@/components/skill-post/collab-details";
-import StepThreePricing from "@/components/skill-post/pricing";
+import StepOnePersonalInfo from "@/components/skill-post/personal-info";
+import StepTwoProfessionalInfo from "@/components/skill-post/professional-info";
+import StepThreeEducationExperience from "@/components/skill-post/education-experience";
 import StepFourMediaRequirements from "@/components/skill-post/media-requirements";
 
-const FreelancePostForm = () => {
+// Maximum number of worker profiles per user
+const MAX_PROFILES_PER_USER = 5;
+
+interface FreelancePostFormProps {
+  initialData?: FormDataType;
+  isEditing?: boolean;
+  collaborationId?: string;
+}
+
+const FreelancePostForm = ({ initialData, isEditing = false, collaborationId }: FreelancePostFormProps) => {
   const { data: session } = useSession();
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [profilesCount, setProfilesCount] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(true);
   
-  const [formData, setFormData] = useState<FormDataType>({
+  const [formData, setFormData] = useState<FormDataType>(initialData || {
+    // Personal Information
+    name: "",
+    gender: "",
+    dob: "",
+    imageUrl: "",
+    profileTitle: "", // New field to identify different profiles
+    
+    // Contact Information
+    contact: {
+      phone: "",
+      email: "",
+      address: ""
+    },
+    
     // Professional Information
-    professionalTitle: "",
-    shortBio: "",
-    skills: "",
-    languages: "",
-    experienceLevel: "",
-    
-    // Gig Details
-    gigTitle: "",
+    languagesSpoken: [],
+    bio: "",
     category: "",
-    subcategory: "",
-    gigDescription: "",
-    searchTags: "",
-    deliveryTime: "",
-    revisions: "",
+    topSkills: [],
+    level: "",
+    availability: "",
+    salary: "",
+    jobsCompleted: 0,
     
-    // Pricing
-    pricingModel: "single", // single or tiered
-    singlePrice: "",
-    basicPackage: { name: "Basic", description: "", price: "", deliveryTime: "", revisions: "", includes: "" },
-    standardPackage: { name: "Standard", description: "", price: "", deliveryTime: "", revisions: "", includes: "" },
-    premiumPackage: { name: "Premium", description: "", price: "", deliveryTime: "", revisions: "", includes: "" },
+    // Experience Details
+    experience: {
+      years: 0,
+      previousEmployers: [
+        { employer: "", duration: "", role: "" }
+      ]
+    },
+    
+    // Education & Certifications
+    education: [
+      { institution: "", qualification: "", yearCompleted: new Date().getFullYear() }
+    ],
+    certifications: [
+      { title: "", issuer: "", year: new Date().getFullYear() }
+    ],
     
     // Media & Requirements
     portfolioImages: [],
@@ -58,64 +86,171 @@ const FreelancePostForm = () => {
     buyerRequirements: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  // Fetch user's existing profiles count
+  useEffect(() => {
+    const fetchProfilesCount = async () => {
+      try {
+        if (session?.user) {
+          const response = await fetch('/api/collaboration?userId=current&countOnly=true');
+          if (response.ok) {
+            const data = await response.json();
+            setProfilesCount(data.count || 0);
+          }
+        }
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching profiles count:", error);
+        setIsLoading(false);
+      }
+    };
+
+    // Skip counting profiles if we're editing an existing one
+    if (isEditing) {
+      setIsLoading(false);
+    } else {
+      fetchProfilesCount();
+    }
+  }, [session, isEditing]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    
+    // Handle nested properties
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setFormData(prevState => {
+        // Ensure that prevState[parent] is an object before spreading
+        const parentValue = prevState[parent as keyof typeof prevState];
+        if (typeof parentValue === 'object' && parentValue !== null) {
+          return {
+            ...prevState,
+            [parent]: {
+              ...parentValue,
+              [child]: value
+            }
+          };
+        }
+        return prevState;
+      });
+    } else {
+      setFormData(prevState => ({
+        ...prevState,
+        [name]: value
+      }));
+    }
+  };
+
+  const handleEmployerChange = (index: number, field: keyof EmployerDetails, value: string) => {
+    setFormData(prevState => {
+      const updatedEmployers = [...prevState.experience.previousEmployers];
+      updatedEmployers[index] = {
+        ...updatedEmployers[index],
+        [field]: value
+      };
+      
+      return {
+        ...prevState,
+        experience: {
+          ...prevState.experience,
+          previousEmployers: updatedEmployers
+        }
+      };
+    });
+  };
+
+  const handleEducationChange = (index: number, field: keyof EducationDetails, value: string | number) => {
+    setFormData(prevState => {
+      const updatedEducation = [...prevState.education];
+      updatedEducation[index] = {
+        ...updatedEducation[index],
+        [field]: field === 'yearCompleted' ? Number(value) : value
+      };
+      
+      return {
+        ...prevState,
+        education: updatedEducation
+      };
+    });
+  };
+
+  const handleCertificationChange = (index: number, field: keyof CertificationDetails, value: string | number) => {
+    setFormData(prevState => {
+      const updatedCertifications = [...prevState.certifications];
+      updatedCertifications[index] = {
+        ...updatedCertifications[index],
+        [field]: field === 'year' ? Number(value) : value
+      };
+      
+      return {
+        ...prevState,
+        certifications: updatedCertifications
+      };
+    });
+  };
+
+  const handleArrayChange = (name: string, values: string[]) => {
     setFormData(prevState => ({
       ...prevState,
-      [name]: value
+      [name]: values
     }));
   };
 
-  type PackageType = "basicPackage" | "standardPackage" | "premiumPackage";
-  type PackageFieldKey = keyof PackageDetails;
-
-  const handlePackageChange = (packageType: PackageType, field: string, value: string): void => {
-      setFormData(prevState => ({
-          ...prevState,
-          [packageType]: {
-              ...prevState[packageType],
-              [field]: value
-          }
-      }));
-  };
-
   const handleNext = () => {
-    setStep(prevStep => Math.min(prevStep + 1, 4));
-    window.scrollTo(0, 0);
+    if (step < 4) {
+      setStep(current => current + 1);
+    }
   };
 
   const handleBack = () => {
-    setStep(prevStep => Math.max(prevStep - 1, 1));
-    window.scrollTo(0, 0);
+    if (step > 1) {
+      setStep(current => current - 1);
+    }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>): Promise<void> => {
-    e.preventDefault();
-    
-    if (!session?.user) {
-      toast({
-        title: "Authentication required",
-        description: "Please log in to submit your freelance collab",
-        variant: "destructive"
-      });
-      return;
-    }
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     
     try {
       setIsSubmitting(true);
       
-      // Submit data without explicitly including userId - the API will look it up by email
-      const response = await fetch('/api/freelance-gigs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      // Add profileTitle if not set
+      if (!formData.profileTitle.trim()) {
+        formData.profileTitle = formData.name;
+      }
+      
+      // Prepare data for API
+      const apiData = {
+        ...formData,
+        projectTitle: formData.profileTitle || formData.name,
+        projectDescription: formData.bio,
+        skills: formData.topSkills.join(', '), // Add this line to map topSkills to skills
+      };
+      
+      let response;
+      
+      if (isEditing && collaborationId) {
+        // Update existing collaboration
+        response = await fetch(`/api/collaboration/${collaborationId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(apiData),
+        });
+      } else {
+        // Create new collaboration
+        response = await fetch('/api/collaboration/post-collab', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(apiData),
+        });
+      }
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || 'Failed to save freelance collab information';
+        const errorMessage = errorData.error || 'Failed to save worker profile information';
         console.error("API Error:", errorData);
         throw new Error(errorMessage);
       }
@@ -124,38 +259,13 @@ const FreelancePostForm = () => {
       
       toast({
         title: "Success!",
-        description: "Your freelance collab has been posted successfully",
+        description: isEditing 
+          ? "Your worker profile has been updated successfully" 
+          : "Your worker profile has been created successfully",
       });
       
-      // Reset form and redirect
-      setFormData({
-        professionalTitle: "",
-        shortBio: "",
-        skills: "",
-        languages: "",
-        experienceLevel: "",
-        gigTitle: "",
-        category: "",
-        subcategory: "",
-        gigDescription: "",
-        searchTags: "",
-        deliveryTime: "",
-        revisions: "",
-        pricingModel: "single",
-        singlePrice: "",
-        basicPackage: { name: "Basic", description: "", price: "", deliveryTime: "", revisions: "", includes: "" },
-        standardPackage: { name: "Standard", description: "", price: "", deliveryTime: "", revisions: "", includes: "" },
-        premiumPackage: { name: "Premium", description: "", price: "", deliveryTime: "", revisions: "", includes: "" },
-        portfolioImages: [],
-        thumbnail: "",
-        video: "",
-        documents: [],
-        buyerRequirements: ""
-      });
-      
-      // Navigate to dashboard using the router
-      router.push("/dashboard");
-      console.log("Freelance collab created:", result);
+      // Redirect to the collaboration dashboard page
+      router.push("/dashboard/collaboration");
       
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -169,12 +279,58 @@ const FreelancePostForm = () => {
     }
   };
 
+  // If still loading profiles count
+  if (isLoading) {
+    return (
+      <div className="container px-4 mx-auto py-10">
+        <div className="max-w-4xl mx-auto text-center">
+          <p>Loading profile information...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If user has reached the maximum number of profiles and not editing
+  if (profilesCount >= MAX_PROFILES_PER_USER && !isEditing) {
+    return (
+      <div className="container px-4 mx-auto py-10">
+        <div className="max-w-4xl mx-auto">
+          <Card className="border-0 shadow-md">
+            <CardHeader className="border-b bg-white rounded-t-lg">
+              <CardTitle className="text-darker">Maximum Profiles Reached</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-6 bg-white text-darker">
+              <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-md">
+                <AlertCircle className="h-5 w-5 text-amber-600" />
+                <p>You've reached the maximum limit of {MAX_PROFILES_PER_USER} worker profiles. Please edit or delete an existing profile to create a new one.</p>
+              </div>
+              <Button 
+                onClick={() => router.push("/dashboard/collaboration")}
+                className="bg-light hover:bg-lightest text-white hover:text-darker"
+              >
+                Go to My Profiles
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container px-4 mx-auto py-10">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-darker mb-2">Post a New Freelance Service</h1>
-          <p className="text-darker/70">Create a freelance service listing to showcase your skills to potential clients</p>
+          <h1 className="text-3xl font-bold text-darker mb-2">
+            {isEditing ? "Edit Your Worker Profile" : "Create Your Worker Profile"}
+          </h1>
+          <p className="text-darker/70">
+            {isEditing 
+              ? "Update your profile information to keep it current and attractive to potential clients."
+              : `Complete your profile to showcase your skills and experience to potential clients. 
+                 You've created ${profilesCount} of ${MAX_PROFILES_PER_USER} allowed profiles.`
+            }
+          </p>
         </div>
 
         {/* Progress Steps */}
@@ -182,27 +338,27 @@ const FreelancePostForm = () => {
           <div className="flex justify-between">
             <div className={`flex-1 text-center ${step >= 1 ? 'text-white' : 'text-gray-500'}`}>
               <div className={`h-10 w-10 rounded-full flex items-center justify-center mx-auto mb-2 ${step >= 1 ? 'bg-light text-white' : 'bg-gray-200 text-gray-500'}`}>
-                <Briefcase className="h-5 w-5" />
+                <User className="h-5 w-5" />
               </div>
-              <p className="text-sm font-medium">Professional Info</p>
+              <p className="text-sm font-medium">Personal Info</p>
             </div>
             <div className="flex-1 flex items-center justify-center">
               <div className={`h-1 w-full ${step >= 2 ? 'bg-light' : 'bg-gray-200'}`}></div>
             </div>
             <div className={`flex-1 text-center ${step >= 2 ? 'text-white' : 'text-gray-400'}`}>
               <div className={`h-10 w-10 rounded-full flex items-center justify-center mx-auto mb-2 ${step >= 2 ? 'bg-light text-white' : 'bg-gray-400 text-gray-500'}`}>
-                <FileText className="h-5 w-5" />
+                <Briefcase className="h-5 w-5" />
               </div>
-              <p className="text-sm font-medium">Collab Details</p>
+              <p className="text-sm font-medium">Professional Info</p>
             </div>
             <div className="flex-1 flex items-center justify-center">
               <div className={`h-1 w-full ${step >= 3 ? 'bg-light' : 'bg-gray-200'}`}></div>
             </div>
             <div className={`flex-1 text-center ${step >= 3 ? 'text-white' : 'text-gray-400'}`}>
               <div className={`h-10 w-10 rounded-full flex items-center justify-center mx-auto mb-2 ${step >= 3 ? 'bg-light text-white' : 'bg-gray-400 text-gray-500'}`}>
-                <DollarSign className="h-5 w-5" />
+                <GraduationCap className="h-5 w-5" />
               </div>
-              <p className="text-sm font-medium">Pricing</p>
+              <p className="text-sm font-medium">Education & Experience</p>
             </div>
             <div className="flex-1 flex items-center justify-center">
               <div className={`h-1 w-full ${step >= 4 ? 'bg-light' : 'bg-gray-200'}`}></div>
@@ -215,21 +371,21 @@ const FreelancePostForm = () => {
             </div>
           </div>
         </div>
-
+        
         <Card className="border-0 shadow-md">
           <CardHeader className="border-b bg-white rounded-t-lg">
             <CardTitle className="text-darker">
-              {step === 1 && "Professional Information"}
-              {step === 2 && "Collab Details"}
-              {step === 3 && "Pricing Options"}
-              {step === 4 && "Media & Requirements"}
+              {step === 1 && "Personal Information"}
+              {step === 2 && "Professional Details"}
+              {step === 3 && "Education & Experience"}
+              {step === 4 && "Media & Portfolio"}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pt-6 bg-white text-darker">
             <form onSubmit={(e) => { e.preventDefault(); handleSubmit(e); }}>
               {/* Render appropriate step component */}
               {step === 1 && (
-                <StepOneProfessionalInfo 
+                <StepOnePersonalInfo 
                   formData={formData} 
                   handleChange={handleChange} 
                   setFormData={setFormData} 
@@ -237,19 +393,22 @@ const FreelancePostForm = () => {
               )}
 
               {step === 2 && (
-                <StepTwoCollabDetails 
+                <StepTwoProfessionalInfo 
                   formData={formData} 
-                  handleChange={handleChange} 
+                  handleChange={handleChange}
+                  handleArrayChange={handleArrayChange}
                   setFormData={setFormData} 
                 />
               )}
 
               {step === 3 && (
-                <StepThreePricing 
-                  formData={formData} 
-                  handleChange={handleChange} 
-                  setFormData={setFormData} 
-                  handlePackageChange={handlePackageChange}
+                <StepThreeEducationExperience 
+                  formData={formData}
+                  handleChange={handleChange}
+                  handleEmployerChange={handleEmployerChange}
+                  handleEducationChange={handleEducationChange}
+                  handleCertificationChange={handleCertificationChange}
+                  setFormData={setFormData}
                 />
               )}
 
@@ -266,7 +425,7 @@ const FreelancePostForm = () => {
                       <p className="text-amber-800 text-sm flex items-center">
                         <Check className="h-4 w-4 mr-2" />
                         <span>
-                          <span className="font-medium">Ready to publish:</span> Your freelance service will be visible to potential clients once posted.
+                          <span className="font-medium">Ready to publish:</span> Your worker profile will be visible to potential clients once posted.
                         </span>
                       </p>
                     </div>
@@ -287,7 +446,14 @@ const FreelancePostForm = () => {
                 Previous
               </Button>
             ) : (
-              <div></div>
+              <Button
+                type="button"
+                onClick={() => router.push("/dashboard/collaboration")}
+                variant="outline"
+                className="border-gray-300 text-darker"
+              >
+                Cancel
+              </Button>
             )}
             
             {step < 4 ? (
@@ -306,7 +472,7 @@ const FreelancePostForm = () => {
                 className="bg-light hover:bg-lightest text-white hover:text-darker" 
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Publish Freelance Service"}
+                {isSubmitting ? "Submitting..." : isEditing ? "Update Profile" : "Create Profile"}
               </Button>
             )}
           </CardFooter>
