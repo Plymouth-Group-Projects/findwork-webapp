@@ -6,15 +6,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 // GET /api/collaboration/[id] - Get a specific collaboration by ID
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await ConnectToDatabase();
     
-    // Access params.id from the dynamic route segment
-    const id = params?.id;
+    const id = params.id;
     
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
@@ -36,30 +33,19 @@ export async function GET(
     const User = mongoose.models.User;
     const user = await User.findById(collaboration.userId).select("name email profilePicture address");
     
-    // Map WorkerProfile fields to the format expected by the frontend
+    // Map WorkerProfile fields directly matching the database structure
     const profile = collaboration.toObject();
-    const mappedProfile = {
+    
+    // Return profile data with minimal transformations to match the database structure
+    return NextResponse.json({
       ...profile,
       userInfo: user ? {
         name: user.name,
         email: user.email,
         profilePicture: user.profilePicture,
         address: user.address
-      } : null,
-      gigTitle: profile.name,
-      projectTitle: profile.name, // Adding for consistency with both endpoints
-      gigDescription: profile.bio,
-      projectDescription: profile.bio, // Adding for consistency with both endpoints
-      professionalTitle: profile.topSkills?.[0] || "Professional",
-      skills: profile.topSkills?.join(', ') || "",
-      pricingModel: "single",
-      singlePrice: parseInt(profile.salary) || 0,
-      languages: profile.languagesSpoken?.join(', ') || "",
-      owner: user?.name || "Anonymous",
-      address: user?.address || "Location not specified",
-    };
-    
-    return NextResponse.json(mappedProfile);
+      } : null
+    });
   } catch (error) {
     console.error("Error fetching collaboration:", error);
     return NextResponse.json(
@@ -70,10 +56,8 @@ export async function GET(
 }
 
 // PUT /api/collaboration/[id] - Update a collaboration profile
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await ConnectToDatabase();
     
@@ -161,10 +145,8 @@ export async function PUT(
 }
 
 // DELETE /api/collaboration/[id] - Delete a collaboration profile
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await ConnectToDatabase();
     

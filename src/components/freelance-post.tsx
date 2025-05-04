@@ -42,7 +42,6 @@ const FreelancePostForm = ({ initialData, isEditing = false, collaborationId }: 
     name: "",
     gender: "",
     dob: "",
-    imageUrl: "",
     profileTitle: "", // New field to identify different profiles
     
     // Contact Information

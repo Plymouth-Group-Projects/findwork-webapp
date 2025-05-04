@@ -41,7 +41,6 @@ export default function EditCollaboration() {
         name: data.name,
         gender: data.gender,
         dob: data.dob,
-        imageUrl: data.imageUrl,
         profileTitle: data.profileTitle,
         contact: data.contact,
         languagesSpoken: data.languagesSpoken,
