@@ -1,5 +1,32 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+// Define settings interfaces
+export interface AccountSettings {
+  emailNotifications: boolean;
+  marketingEmails: boolean;
+  socialConnections: boolean;
+  twoFactorAuth: boolean;
+}
+
+export interface AppearanceSettings {
+  theme: 'light' | 'dark' | 'system';
+  compactView: boolean;
+  fontSize: 'sm' | 'md' | 'lg';
+  animationsEnabled: boolean;
+}
+
+export interface PrivacySettings {
+  profileVisibility: 'public' | 'contacts' | 'private';
+  showActivity: boolean;
+  showOnlineStatus: boolean;
+}
+
+export interface UserSettings {
+  accountSettings: AccountSettings;
+  appearanceSettings: AppearanceSettings;
+  privacySettings: PrivacySettings;
+}
+
 // Define the user interface with TypeScript
 export interface IUser extends Document {
   name: string;
@@ -17,6 +44,7 @@ export interface IUser extends Document {
   lastLogin: Date;
   createdAt: Date;
   updatedAt: Date;
+  settings?: UserSettings;
 }
 
 // Create the schema with validation and options
@@ -69,6 +97,10 @@ const UserSchema = new Schema<IUser>(
     lastLogin: {
       type: Date,
       default: Date.now,
+    },
+    settings: {
+      type: Object,
+      default: null,
     },
   },
   {

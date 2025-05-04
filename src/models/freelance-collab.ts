@@ -6,7 +6,6 @@ export interface IWorkerProfile extends Document {
   name: string;
   gender: string;
   dob: string;
-  imageUrl: string;
   profileTitle: string; // Title to identify different profiles from the same user
   contact: {
     phone: string;
@@ -64,7 +63,6 @@ const WorkerProfileSchema = new Schema<IWorkerProfile>(
     name: { type: String, required: true },
     gender: { type: String, required: true },
     dob: { type: String, required: true },
-    imageUrl: { type: String, required: true },
     profileTitle: { type: String, required: true }, // Title to identify different profiles
     
     // Contact Information

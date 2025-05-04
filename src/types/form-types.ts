@@ -36,7 +36,6 @@ export interface FormDataType {
   name: string;
   gender: string;
   dob: string;
-  imageUrl: string;
   profileTitle: string; // Title to identify different profiles from the same user
   
   // Contact Information

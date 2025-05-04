@@ -117,7 +117,7 @@ export default function CollaborationsPage() {
                 key={collab._id}
                 collaboration={{
                   id: collab._id,
-                  imageUrl: collab.imageUrl || collab.thumbnail || "/profile-caregiver.svg",
+                  imageUrl: collab.imageUrl || collab.thumbnail,
                   Name: collab.name || collab.profileTitle,
                   availability: collab.availability || "Available",
                   topSkills: collab.topSkills || [],
