@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Loader2, UserCircle, Mail, Phone, Calendar, User, Shield } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { format } from 'date-fns';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +37,16 @@ interface ProfileFormData {
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }
+
+// Helper function to format dates using the native Intl API
+const formatDate = (date: Date | string | undefined, formatOptions: Intl.DateTimeFormatOptions = { 
+  year: 'numeric', 
+  month: 'short', 
+  day: 'numeric' 
+}): string => {
+  if (!date) return 'N/A';
+  return new Intl.DateTimeFormat('en-US', formatOptions).format(new Date(date));
+};
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -213,7 +222,7 @@ export default function ProfilePage() {
                     <User className="w-4 h-4 mr-2.5 text-primary/70" />
                     <span className="font-medium">Member since:</span>
                     <span className="ml-auto text-muted-foreground">
-                      {profile?.createdAt ? format(new Date(profile.createdAt), 'MMM dd, yyyy') : 'N/A'}
+                      {formatDate(profile?.createdAt)}
                     </span>
                   </div>
                   
@@ -221,7 +230,7 @@ export default function ProfilePage() {
                     <Calendar className="w-4 h-4 mr-2.5 text-primary/70" />
                     <span className="font-medium">Last active:</span>
                     <span className="ml-auto text-muted-foreground">
-                      {profile?.updatedAt ? format(new Date(profile.updatedAt), 'MMM dd, yyyy') : 'N/A'}
+                      {formatDate(profile?.updatedAt)}
                     </span>
                   </div>
                   
@@ -389,7 +398,7 @@ export default function ProfilePage() {
                         </Label>
                         <Input 
                           id="lastLogin" 
-                          value={profile?.lastLogin ? format(new Date(profile.lastLogin), 'MMM dd, yyyy HH:mm') : 'N/A'}
+                          value={formatDate(profile?.lastLogin, { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' })}
                           disabled
                           placeholder="Last Login"
                           className="bg-muted/50 border-0 text-muted-foreground"
