@@ -51,6 +51,7 @@ export default function Services() {
 			description:
 				"Quickly create and share job postings to find the right workers with ease. Post listings, connect with qualified candidates, and hire the perfect fit—all in just a few clicks!",
 			imageurl: "../job-posting.svg",
+			route: "/dashboard/job-listing/post-job",
 		},
 		{
 			id: 1,
@@ -66,7 +67,7 @@ export default function Services() {
 			description:
 				"Highlight your expertise and stand out to potential employers! Create a compelling profile showcasing your skills, experience, and achievements, increasing your chances of getting hired for the perfect opportunity.",
 			imageurl: "../post-proficiency.svg",
-			route: "/dashboard/skill-post"
+			route: "/dashboard/collaboration/post-collab"
 		},
 		{
 			id: 3,

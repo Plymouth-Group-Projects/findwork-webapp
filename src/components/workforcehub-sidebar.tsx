@@ -35,12 +35,26 @@ import {
   RadioGroupItem,
 } from "@/components/ui/radio-group"
 
-export function WorkforceSidebar() {
+interface WorkforceSidebarProps {
+  onFilterChange: (filters: any) => void;
+  initialFilters?: {
+    category?: string | null;
+    location?: string | null;
+    availability?: string | null;
+    minRate?: number | null;
+    maxRate?: number | null;
+    rateType?: string | null;
+    workTypes?: string[] | null;
+    level?: string | null;
+  };
+}
+
+export function WorkforceSidebar({ onFilterChange, initialFilters = {} }: WorkforceSidebarProps) {
   // Using null as initial state to detect client-side rendering
   const [isMounted, setIsMounted] = useState(false)
   const [employmentTypes, setEmploymentTypes] = useState<string[]>([])
   const [seniorityLevels, setSeniorityLevels] = useState<string[]>([])
-  const [rateType, setRateType] = useState<string>("hourly") // Default to hourly rate
+  const [rateType, setRateType] = useState<string>(initialFilters.rateType || "hourly") // Default to hourly rate
   const [hourlyRateValues, setHourlyRateValues] = useState<[number, number]>([500, 5000])
   const [dailyRateValues, setDailyRateValues] = useState<[number, number]>([2000, 20000])
   const [hourlyRate, setHourlyRate] = useState<[number, number]>([500, 5000])
@@ -48,11 +62,15 @@ export function WorkforceSidebar() {
   const [maxSalary, setMaxSalary] = useState('')
   
   // New state variables for additional filters
-  const [jobCategory, setJobCategory] = useState<string>('')
-  const [location, setLocation] = useState<string>('')
-  const [availability, setAvailability] = useState<string[]>([])
-  const [workTypes, setWorkTypes] = useState<string[]>([])
-  const [experienceLevel, setExperienceLevel] = useState<string>('')
+  const [jobCategory, setJobCategory] = useState<string>(initialFilters.category || '')
+  const [location, setLocation] = useState<string>(initialFilters.location || '')
+  const [availability, setAvailability] = useState<string[]>(
+    initialFilters.availability ? [initialFilters.availability] : []
+  )
+  const [workTypes, setWorkTypes] = useState<string[]>(
+    initialFilters.workTypes || []
+  )
+  const [experienceLevel, setExperienceLevel] = useState<string>(initialFilters.level || '')
 
   // Sample locations data
   const locations = [
@@ -109,6 +127,21 @@ export function WorkforceSidebar() {
     setExperienceLevel('')
     setRateType("hourly")
   }
+  
+  const applyFilters = () => {
+    const filters = {
+      category: jobCategory || null,
+      location: location || null,
+      availability: availability.length > 0 ? availability[0] : null,
+      minRate: hourlyRate[0],
+      maxRate: hourlyRate[1],
+      rateType,
+      workTypes: workTypes.length > 0 ? workTypes : null,
+      level: experienceLevel || null,
+    };
+    
+    onFilterChange(filters);
+  };
 
   // If not mounted (server render), return a simpler version or loading state
   if (!isMounted) {
@@ -137,7 +170,15 @@ export function WorkforceSidebar() {
         <SidebarGroup>
           <div className="flex justify-between items-center">
             <SidebarGroupLabel className="text-darker text-base tracking-wider">Filters</SidebarGroupLabel>
-            <Button variant="ghost" size="sm" onClick={clearAll} className="text-xs text-darker/70 hover:text-darker">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => {
+                clearAll();
+                onFilterChange({});
+              }} 
+              className="text-xs text-darker/70 hover:text-darker"
+            >
               Clear All
             </Button>
           </div>
@@ -153,7 +194,7 @@ export function WorkforceSidebar() {
                       <SelectValue placeholder="Select job category" />
                     </SelectTrigger>
                     <SelectContent className="text-darker bg-white">
-                      {["Cleaner", "Plumber", "Electrician", "Carpenter", "Painter", "Driver", "Gardener", "Security Guard"].map((category) => (
+                      {["Construction", "Home Services", "Personal Care", "Transportation", "Electrical"].map((category) => (
                         <SelectItem key={category} value={category}>{category}</SelectItem>
                       ))}
                     </SelectContent>
@@ -296,15 +337,20 @@ export function WorkforceSidebar() {
                       <SelectValue placeholder="Select experience level" />
                     </SelectTrigger>
                     <SelectContent className="text-darker bg-white">
-                      <SelectItem value="beginner">Beginner</SelectItem>
-                      <SelectItem value="intermediate">Intermediate</SelectItem>
-                      <SelectItem value="expert">Expert</SelectItem>
+                      <SelectItem value="Beginner">Beginner</SelectItem>
+                      <SelectItem value="Intermediate">Intermediate</SelectItem>
+                      <SelectItem value="Expert">Expert</SelectItem>
+                      <SelectItem value="Verified">Verified</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <Button className="w-full my-6 bg-light text-white hover:bg-lightest hover:text-darker" variant="default">
+                <Button 
+                  className="w-full my-6 bg-light text-white hover:bg-lightest hover:text-darker" 
+                  variant="default"
+                  onClick={applyFilters}
+                >
                   Apply Filters
                 </Button>
               </SidebarMenuItem>
