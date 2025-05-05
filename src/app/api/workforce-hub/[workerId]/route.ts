@@ -2,10 +2,8 @@ import { NextResponse } from "next/server";
 import { ConnectToDatabase } from "@/lib/mongoose";
 import { WorkerProfile } from "@/models/freelance-collab";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { workerId: string } }
-) {
+export async function GET(request: Request, props: { params: Promise<{ workerId: string }> }) {
+  const params = await props.params;
   try {
     await ConnectToDatabase();
     const workerId = params.workerId;
