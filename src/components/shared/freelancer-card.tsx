@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -23,12 +24,21 @@ interface FreelancerCardProps {
     salary: string;
     jobsCompleted: string;
     level: string;
+    _id?: string; // Add MongoDB _id for navigation
   };
   isActive: boolean;
   index: number;
 }
 
 export default function FreelancerCard({ freelancer, isActive, index }: FreelancerCardProps) {
+  const router = useRouter();
+
+  const handleHireClick = () => {
+    // Navigate to worker detail page
+    const workerId = freelancer._id || `worker-${freelancer.id}`;
+    router.push(`/workforce-hub/${workerId}`);
+  };
+
   return (
     <Card
       className={`
@@ -95,23 +105,22 @@ export default function FreelancerCard({ freelancer, isActive, index }: Freelanc
             {freelancer.jobsCompleted} Jobs Completed.
           </p>
         </CardDescription>
-        <a href="#">
-          <Button
-            className={`
-              absolute bottom-5 left-5 right-5 font-medium 
-              bg-light text-white hover:bg-lightest hover:text-darker
-              py-2 shadow-sm transform group
-              transition-all duration-300 ease-in-out
-              ${isActive ? "opacity-100" : "opacity-0"}
-            `}
-          >
-            <span className="transition-transform duration-300 group-hover:translate-x-1">Hire Now</span>
-            <SlArrowRight 
-              className="ml-2 my-auto transition-transform duration-300 group-hover:translate-x-1" 
-              size={14} 
-            />
-          </Button>
-        </a>
+        <Button
+          onClick={handleHireClick}
+          className={`
+            absolute bottom-5 left-5 right-5 font-medium 
+            bg-light text-white hover:bg-lightest hover:text-darker
+            py-2 shadow-sm transform group
+            transition-all duration-300 ease-in-out
+            ${isActive ? "opacity-100" : "opacity-0"}
+          `}
+        >
+          <span className="transition-transform duration-300 group-hover:translate-x-1">Hire Now</span>
+          <SlArrowRight 
+            className="ml-2 my-auto transition-transform duration-300 group-hover:translate-x-1" 
+            size={14} 
+          />
+        </Button>
       </CardContent>
     </Card>
   );
