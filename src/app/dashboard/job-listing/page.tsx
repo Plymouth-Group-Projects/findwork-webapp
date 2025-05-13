@@ -303,12 +303,12 @@ export default function JobListingPage() {
                         <Badge variant="secondary">{job.applicantCount}</Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex justify-end space-x-2">
-                          <Button 
+                        <div className="flex justify-end space-x-2">                          <Button 
                             variant="ghost" 
                             size="sm" 
                             className="h-8 w-8 p-0"
                             title="View Details"
+                            onClick={() => router.push(`/dashboard/job-listing/${job._id}`)}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>

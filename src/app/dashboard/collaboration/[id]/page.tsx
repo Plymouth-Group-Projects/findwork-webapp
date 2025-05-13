@@ -29,7 +29,9 @@ import {
   Edit,
   Trash,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  FileText,
+  Clock
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -60,18 +62,37 @@ interface CollaborationDetail {
     profilePicture?: string;
     address?: string;
   };
+  // HiredCollaboration specific fields
+  isHiredCollaboration?: boolean;
+  clientId?: string;
+  originalProfileId?: string;
+  hiredDate?: string;
+  projectTitle?: string;
+  projectDescription?: string;
+  paymentTerms?: string;
+  paymentAmount?: number;
+  currentStatus?: 'active' | 'completed' | 'terminated' | 'on-hold';
+  stripeSessionId?: string;
   createdAt: string;
 }
 
 export default function CollaborationDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const [collaboration, setCollaboration] = useState<CollaborationDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [owner, setOwner] = useState<any>(null);
+  
+  // Debug session status
+  useEffect(() => {
+    console.log("Session status:", sessionStatus);
+    console.log("Session data:", session);
+  }, [session, sessionStatus]);
 
   useEffect(() => {
     const fetchCollaboration = async () => {
@@ -90,35 +111,76 @@ export default function CollaborationDetailPage() {
         console.error('Error fetching collaboration:', err);
       } finally {
         setLoading(false);
-      }
-    };
-
+      }    };
+    
     if (id) {
       fetchCollaboration();
     }
   }, [id]);
-
-  // Check if current user is the owner by comparing database IDs
+    // Check if current user is the owner or client by comparing database IDs
   useEffect(() => {
-    const checkOwnership = async () => {
-      if (!session?.user?.email || !collaboration) return;
-      
-      try {
+    const checkRoles = async () => {
+      // Only proceed if session is authenticated and collaboration data is available
+      if (sessionStatus !== "authenticated" || !session?.user?.email || !collaboration) {
+        console.log("Missing required data:", { 
+          sessionStatus,
+          hasSession: !!session, 
+          hasSessionUser: !!session?.user,
+          hasSessionEmail: !!session?.user?.email,
+          hasCollaboration: !!collaboration 
+        });
+        return;
+      }
+        try {
         // Fetch the current user from database to get their MongoDB ID
         const response = await fetch(`/api/user?email=${encodeURIComponent(session.user.email)}`);
-        
         if (response.ok) {
-          const userData = await response.json();
-          // Compare the MongoDB ID with the collaboration's userId
-          setIsOwner(userData._id === collaboration.userId);
+          const userData = await response.json();          if (userData.success && userData.data) {
+            // Compare the MongoDB ID with the collaboration's userId as strings
+            const isOwnerVal = userData.data._id.toString() === collaboration.userId.toString();
+            setIsOwner(isOwnerVal);
+            
+            // Check if user is the client who hired this collaboration
+            let isClientVal = false;
+            if (collaboration.isHiredCollaboration && collaboration.clientId && 
+                userData.data._id.toString() === collaboration.clientId.toString()) {
+              isClientVal = true;
+            }
+            setIsClient(isClientVal);
+            
+            // Log full user data for debugging
+            const fullName = userData.data.firstName && userData.data.lastName ? 
+              `${userData.data.firstName} ${userData.data.lastName}` : 
+              (userData.data.firstName || "Unknown");
+              
+            console.log("Role check results:", {
+              userID: userData.data._id,
+              userName: fullName,
+              userEmail: userData.data.email,
+              userImage: userData.data.image,
+              collaborationUserID: collaboration.userId,
+              isOwner: isOwnerVal,
+              isClient: isClientVal,
+              collaborationClientId: collaboration.clientId
+            });
+          } else {
+            console.error("User data format is unexpected:", userData);
+          }
+        } else {
+          console.error("Failed to fetch user data:", await response.text());
         }
       } catch (err) {
-        console.error('Error checking ownership:', err);
+        console.error('Error checking user roles:', err);
       }
-    };
-    
-    checkOwnership();
-  }, [session?.user?.email, collaboration]);
+    };    
+    checkRoles();
+  }, [session?.user?.email, collaboration, sessionStatus]);  // Use the userInfo already provided in the collaboration response
+  useEffect(() => {
+    if (collaboration?.userInfo) {
+      setOwner(collaboration.userInfo);
+      console.log("Collaboration userInfo:", collaboration.userInfo);
+    }
+  }, [collaboration?.userInfo]);
 
   const handleDelete = async () => {
     if (!window.confirm('Are you sure you want to delete this collaboration profile?')) {
@@ -190,13 +252,23 @@ export default function CollaborationDetailPage() {
       </div>
     );
   }
-
   // Handle field variations between API endpoints
-  const title = collaboration.profileTitle || "Unnamed Collaboration";
-  const description = collaboration.bio || "No description provided";
+  const title = collaboration.isHiredCollaboration 
+    ? collaboration.projectTitle || "Hired Collaboration" 
+    : collaboration.profileTitle || "Unnamed Collaboration";const description = collaboration.isHiredCollaboration 
+    ? collaboration.projectDescription || "No project description provided"
+    : collaboration.bio || "No description provided";
+    
   const skills = collaboration.topSkills?.join(", ") || "No skills specified";
-  const price = parseInt(collaboration.salary) || 0;
+  const price = collaboration.isHiredCollaboration 
+    ? collaboration.paymentAmount || 0
+    : parseInt(collaboration.salary) || 0;
   const languages = collaboration.languagesSpoken?.join(", ") || "";
+  
+  // Format the hire date if it exists
+  const hireDate = collaboration.hiredDate 
+    ? new Date(collaboration.hiredDate).toLocaleDateString() 
+    : "N/A";
 
   return (
     <div className="container mt-24 px-4 mx-auto py-8">
@@ -216,25 +288,43 @@ export default function CollaborationDetailPage() {
         <div className="lg:col-span-2">
           <Card className="border-0 shadow-md bg-white mb-6">
             <CardHeader className="bg-white rounded-t-lg border-b border-light/50">
-              <div className="flex justify-between items-start">
-                <div>
+              <div className="flex justify-between items-start">                <div>
                   <CardTitle className="text-2xl text-darker">{title}</CardTitle>
-                  <CardDescription className="text-darker/70">
-                    {collaboration.category} • {collaboration.level} Level
-                  </CardDescription>
+                  {collaboration.isHiredCollaboration ? (
+                    <CardDescription className="text-darker/70">
+                      Hired Collaboration • {collaboration.currentStatus 
+                        ? collaboration.currentStatus.charAt(0).toUpperCase() + collaboration.currentStatus.slice(1)
+                        : "Active"}
+                    </CardDescription>
+                  ) : (
+                    <CardDescription className="text-darker/70">
+                      {collaboration.category} • {collaboration.level} Level
+                    </CardDescription>
+                  )}
                 </div>
                 <Badge className={`
-                  ${collaboration.status === 'active' ? 'bg-green-500' : 
-                    collaboration.status === 'pending' ? 'bg-amber-500' : 'bg-red-500'} 
+                  ${collaboration.isHiredCollaboration
+                    ? (collaboration.currentStatus === 'active' ? 'bg-green-500' : 
+                       collaboration.currentStatus === 'on-hold' ? 'bg-amber-500' : 
+                       collaboration.currentStatus === 'terminated' ? 'bg-red-500' :
+                       'bg-blue-500')
+                    : (collaboration.status === 'active' ? 'bg-green-500' : 
+                       collaboration.status === 'pending' ? 'bg-amber-500' : 'bg-red-500')} 
                   text-white
                 `}>
-                  {collaboration.status.charAt(0).toUpperCase() + collaboration.status.slice(1)}
+                  {collaboration.isHiredCollaboration 
+                    ? (collaboration.currentStatus 
+                        ? collaboration.currentStatus.charAt(0).toUpperCase() + collaboration.currentStatus.slice(1)
+                        : "Active")
+                    : (collaboration.status
+                        ? collaboration.status.charAt(0).toUpperCase() + collaboration.status.slice(1)
+                        : "Active")}
                 </Badge>
               </div>
             </CardHeader>
 
-            {/* Thumbnail image */}
-            {collaboration.thumbnail && (
+            {/* Thumbnail image - only show for regular collaborations */}
+            {!collaboration.isHiredCollaboration && collaboration.thumbnail && (
               <div className="relative w-full h-64 mt-4 mb-2">
                 <Image
                   src={collaboration.thumbnail}
@@ -246,26 +336,53 @@ export default function CollaborationDetailPage() {
             )}
             
             <CardContent className="pt-5">
-              <h3 className="text-lg font-semibold text-darker mb-3">About This Service</h3>
+              <h3 className="text-lg font-semibold text-darker mb-3">
+                {collaboration.isHiredCollaboration ? "Project Details" : "About This Service"}
+              </h3>
               <p className="text-darker mb-6">
                 {description}
               </p>
               
               <Separator className="my-6" />
               
-              <h3 className="text-lg font-semibold text-darker mb-3">Skills</h3>
-              <div className="flex flex-wrap gap-2 mb-6">
-                {collaboration.topSkills?.map((skill, index) => (
-                  <Badge key={index} variant="outline" className="bg-light/10 text-darker">
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
+              {/* Show different content based on collaboration type */}
+              {collaboration.isHiredCollaboration ? (
+                <>
+                  <h3 className="text-lg font-semibold text-darker mb-3">Collaboration Details</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div className="flex items-center">
+                      <Clock className="h-5 w-5 mr-3 text-light" />
+                      <div>
+                        <p className="text-sm text-darker/70">Hire Date</p>
+                        <p className="text-darker font-medium">{hireDate}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center">
+                      <FileText className="h-5 w-5 mr-3 text-light" />
+                      <div>
+                        <p className="text-sm text-darker/70">Payment Terms</p>
+                        <p className="text-darker font-medium">{collaboration.paymentTerms || "Not specified"}</p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-lg font-semibold text-darker mb-3">Skills</h3>
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {collaboration.topSkills?.map((skill, index) => (
+                      <Badge key={index} variant="outline" className="bg-light/10 text-darker">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                </>
+              )}
               
               <Separator className="my-6" />
-              
-              {/* Portfolio images */}
-              {collaboration.portfolioImages && collaboration.portfolioImages.length > 0 && (
+                {/* Portfolio images - only show for regular collaborations */}
+              {!collaboration.isHiredCollaboration && collaboration.portfolioImages && collaboration.portfolioImages.length > 0 && (
                 <>
                   <h3 className="text-lg font-semibold text-darker mb-3">Portfolio</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
@@ -283,19 +400,18 @@ export default function CollaborationDetailPage() {
                   <Separator className="my-6" />
                 </>
               )}
-              
-              {/* Actions for owner */}
-              {isOwner && (
+              {(isOwner && !collaboration.isHiredCollaboration) && (
                 <div className="flex flex-wrap gap-4 justify-end">
-                  <Button 
-                    variant="outline"
-                    className="border-light text-light hover:bg-light hover:text-white"
-                    onClick={() => router.push(`/dashboard/collaboration/edit/${collaboration._id}`)}
-                  >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit Profile
-                  </Button>
+                    <Button 
+                      variant="outline"
+                      className="border-light text-light hover:bg-light hover:text-white"
+                      onClick={() => router.push(`/dashboard/collaboration/edit/${collaboration._id}`)}
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit Profile
+                    </Button>
                   
+                  {/* Delete button */}
                   <Button 
                     variant="outline"
                     className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
@@ -318,91 +434,97 @@ export default function CollaborationDetailPage() {
             <CardHeader className="bg-white rounded-t-lg border-b border-light/50">
               <CardTitle className="text-darker flex items-center">
                 <DollarSign className="h-5 w-5 mr-2 text-light" />
-                Pricing
+                {collaboration.isHiredCollaboration ? "Payment Details" : "Pricing"}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-5">
               <div className="text-3xl font-bold text-darker mb-2">
                 ${price} 
-                <span className="text-sm font-normal text-darker/70"> per project</span>
+                <span className="text-sm font-normal text-darker/70">
+                  {collaboration.isHiredCollaboration ? "" : " per project"}
+                </span>
               </div>
               
-              <Button 
-                className="w-full mt-4 bg-light text-white hover:bg-lightest hover:text-darker"
-                disabled={!isOwner}
-              >
-                <CheckCircle className="h-4 w-4 mr-2" />
-                {isOwner ? 'You own this profile' : 'Contact Provider'}
-              </Button>
+              {/* Only show the hire button for regular collaborations */}
+              {!collaboration.isHiredCollaboration && (
+                <Button 
+                  className="mt-4 w-full bg-light text-white hover:bg-lightest hover:text-darker"
+                  onClick={() => router.push(`/checkout?profileId=${collaboration._id}`)}
+                >
+                  Hire Now
+                </Button>
+              )}
             </CardContent>
           </Card>
           
-          {/* Provider info */}
+          {/* User info card */}
           <Card className="border-0 shadow-md bg-white mb-6">
             <CardHeader className="bg-white rounded-t-lg border-b border-light/50">
               <CardTitle className="text-darker flex items-center">
                 <User className="h-5 w-5 mr-2 text-light" />
-                Provider Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-5">
+                {collaboration.isHiredCollaboration ? "Collaborator Information" : "About the Professional"}
+              </CardTitle>            
+            </CardHeader>            
+            <CardContent className="pt-5">              
               <div className="flex items-center mb-4">
-                <Avatar className="h-16 w-16 mr-4">
-                  <AvatarImage src={collaboration.userInfo?.profilePicture || ""} alt={collaboration.userInfo?.name || "User"} />
-                  <AvatarFallback className="bg-light text-white">
-                    {collaboration.userInfo && collaboration.userInfo.name ? 
-                      collaboration.userInfo.name.split(' ').map(n => n[0]).join('') : 
-                      "U"}
-                  </AvatarFallback>
+                <Avatar className="h-12 w-12 mr-4">
+                  {owner?.profilePicture ? (
+                    <AvatarImage 
+                      src={owner.profilePicture} 
+                      alt={owner.name} 
+                    />
+                  ) : (
+                    <AvatarFallback>
+                      {(owner?.name?.charAt(0) || 'U')}
+                    </AvatarFallback>
+                  )}
                 </Avatar>
                 <div>
-                  <h3 className="font-medium text-darker">{collaboration.userInfo?.name || "Anonymous"}</h3>
-                  <p className="text-sm text-darker/70">{collaboration.userInfo?.email || "No email provided"}</p>
+                  <h3 className="font-medium text-darker">{owner?.name || 'User'}</h3>
+                  <p className="text-sm text-darker/70">{owner?.email}</p>
                 </div>
               </div>
               
-              <Separator className="my-4" />
-              
               <div className="space-y-3">
+                {collaboration.languagesSpoken && collaboration.languagesSpoken.length > 0 && (
+                  <div className="flex items-start">
+                    <Languages className="h-5 w-5 mr-3 text-light flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-darker/70">Languages</p>
+                      <p className="text-darker">{languages}</p>
+                    </div>
+                  </div>
+                )}
+                
+                {collaboration.contact?.email && (
+                  <div className="flex items-start">
+                    <Mail className="h-5 w-5 mr-3 text-light flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-darker/70">Email</p>
+                      <p className="text-darker">{collaboration.contact.email}</p>
+                    </div>
+                  </div>
+                )}
+                
                 {collaboration.contact?.phone && (
-                  <div className="flex items-center text-sm">
-                    <Phone className="h-4 w-4 mr-2 text-light" />
-                    <span className="text-darker">{collaboration.contact.phone}</span>
+                  <div className="flex items-start">
+                    <Phone className="h-5 w-5 mr-3 text-light flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-darker/70">Phone</p>
+                      <p className="text-darker">{collaboration.contact.phone}</p>
+                    </div>
                   </div>
                 )}
                 
-                <div className="flex items-center text-sm">
-                  <Mail className="h-4 w-4 mr-2 text-light" />
-                  <span className="text-darker">{collaboration.userInfo?.email || "No email provided"}</span>
-                </div>
-                
-                {(collaboration.userInfo?.address || collaboration.contact?.address) && (
-                  <div className="flex items-center text-sm">
-                    <MapPin className="h-4 w-4 mr-2 text-light" />
-                    <span className="text-darker">
-                      {collaboration.userInfo?.address || collaboration.contact?.address}
-                    </span>
+                {collaboration.contact?.address && (
+                  <div className="flex items-start">
+                    <MapPin className="h-5 w-5 mr-3 text-light flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-darker/70">Address</p>
+                      <p className="text-darker">{collaboration.contact.address}</p>
+                    </div>
                   </div>
                 )}
-                
-                {languages && (
-                  <div className="flex items-center text-sm">
-                    <Languages className="h-4 w-4 mr-2 text-light" />
-                    <span className="text-darker">{languages}</span>
-                  </div>
-                )}
-                
-                <div className="flex items-center text-sm">
-                  <Award className="h-4 w-4 mr-2 text-light" />
-                  <span className="text-darker">{collaboration.level} Experience Level</span>
-                </div>
-                
-                <div className="flex items-center text-sm">
-                  <CalendarClock className="h-4 w-4 mr-2 text-light" />
-                  <span className="text-darker">
-                    Joined {new Date(collaboration.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
               </div>
             </CardContent>
           </Card>

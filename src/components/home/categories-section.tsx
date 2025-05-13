@@ -121,7 +121,7 @@ export default function Categories() {
 								<div className="p-1">
 									<Card
 										className={`
-										h-[380px] bg-white border-none text-darker
+										h-[300px] bg-white border-none text-darker
 										transition-all duration-300 ease-in-out
 										${
 											activeIndex === index
@@ -154,7 +154,7 @@ export default function Categories() {
 													))}
 												</ul>
 											</CardDescription>
-											<a href="#">
+											{/* <a href="#">
 												<Button
 													className={`absolute bottom-5 px-8 font-medium bg-lightest hover:bg-light hover:text-white
 														${activeIndex === index ? "opacity-100" : "opacity-0"}
@@ -162,7 +162,7 @@ export default function Categories() {
 												>
 													View More
 												</Button>
-											</a>
+											</a> */}
 										</CardContent>
 									</Card>
 								</div>

@@ -65,10 +65,9 @@ const ContractSchema = new Schema<IContract>(
     paymentAmount: {
       type: Number,
       required: [true, 'Payment amount is required'],
-    },
-    currency: {
+    },    currency: {
       type: String,
-      default: 'USD',
+      default: 'LKR',
       required: true,
     },
     status: {

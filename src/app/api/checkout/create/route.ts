@@ -3,6 +3,8 @@ import Stripe from "stripe";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { headers } from "next/headers";
+import { ConnectToDatabase } from "@/lib/mongoose";
+import { User } from "@/models/user";
 
 // Initialize Stripe with your secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
@@ -25,8 +27,7 @@ async function getBaseUrl() {
 }
 
 export async function POST(request: Request) {
-  try {
-    // Get the authenticated user
+  try {    // Get the authenticated user
     const session = await getServerSession(authOptions);
     
     if (!session?.user) {
@@ -35,6 +36,9 @@ export async function POST(request: Request) {
         error: "You must be logged in to make a payment" 
       }, { status: 401 });
     }
+    
+    // Connect to database
+    await ConnectToDatabase();
     
     // Parse request body
     const body = await request.json();
@@ -57,9 +61,8 @@ export async function POST(request: Request) {
     const checkoutSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
-        {
-          price_data: {
-            currency: "usd",
+        {          price_data: {
+            currency: "lkr",
             product_data: {
               name: `Hire ${workerName}`,
               description: description || "Worker hiring service",
@@ -68,10 +71,9 @@ export async function POST(request: Request) {
           },
           quantity: 1,
         },
-      ],
-      metadata: {
+      ],      metadata: {
         workerId,
-        userId: session.user.id,
+        userId: session.user.id, // We keep this as the OAuth ID since we only use it for verification
       },
       mode: "payment",
       success_url: `${baseUrl}/dashboard/collaboration/success?session_id={CHECKOUT_SESSION_ID}`,

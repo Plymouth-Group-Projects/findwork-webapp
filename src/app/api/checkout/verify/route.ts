@@ -3,8 +3,8 @@ import Stripe from "stripe";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { ConnectToDatabase } from "@/lib/mongoose";
-import { Contract } from "@/models/contract";
 import { WorkerProfile } from "@/models/freelance-collab";
+import { HiredCollaboration } from "@/models/hired-collab";
 import { User } from "@/models/user";
 
 // Initialize Stripe with your secret key
@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     const session = await getServerSession(authOptions);
     
     if (!session?.user) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         success: false, 
         error: "Unauthorized" 
       }, { status: 401 });
@@ -46,14 +46,25 @@ export async function GET(request: Request) {
     }
 
     // Connect to the database
-    await ConnectToDatabase();
-
-    // Get worker and client details
+    await ConnectToDatabase();    // Get worker and client details
     const workerId = checkoutSession.metadata?.workerId;
-    const userId = checkoutSession.metadata?.userId;
+    const sessionUserId = checkoutSession.metadata?.userId;
     
-    // Verify that the session is for the current user
-    if (userId !== session.user.id) {
+    // Get the MongoDB ObjectId of the user from the database using their email
+    const dbUser = await User.findOne({ email: session.user.email });
+    
+    if (!dbUser) {
+      return NextResponse.json({ 
+        success: false, 
+        error: "User not found in database" 
+      }, { status: 404 });
+    }
+    
+    // Use the MongoDB ObjectId from the database
+    const userId = dbUser._id;
+    
+    // Verify that the session user matches the checkout user (by email)
+    if (sessionUserId !== session.user.id) {
       return NextResponse.json({ 
         success: false, 
         error: "Unauthorized: User ID mismatch" 
@@ -61,7 +72,7 @@ export async function GET(request: Request) {
     }
 
     const worker = workerId ? await WorkerProfile.findById(workerId) : null;
-    const client = await User.findById(userId);
+    const client = dbUser; // Use the already fetched user
 
     if (!worker || !client) {
       return NextResponse.json({ 
@@ -69,37 +80,9 @@ export async function GET(request: Request) {
         error: "Worker or client not found" 
       }, { status: 404 });
     }
-    
-    // Check if we've already processed this payment
-    const existingContract = await Contract.findOne({ stripeSessionId: sessionId });
-    
-    let contract;
-    
-    // If contract doesn't exist, create a new one
-    if (!existingContract && checkoutSession.payment_status === "paid") {
-      // Calculate the amount in dollars
-      const amountInDollars = (checkoutSession.amount_total || 0) / 100;
-      
-      // Create a new contract
-      contract = await Contract.create({
-        workerId: workerId,
-        clientId: userId,
-        title: `Contract with ${worker.name}`,
-        description: `Service contract for ${worker.name}`,
-        amount: amountInDollars,
-        status: "active",
-        startDate: new Date(),
-        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now by default
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        stripeSessionId: sessionId,
-        stripePaymentIntentId: checkoutSession.payment_intent,
-      });
-    } else {
-      contract = existingContract;
-    }
-    
-    // Return payment details
+      // Check if we've already processed this payment and created a hired collaboration
+    const existingCollaboration = await HiredCollaboration.findOne({ stripeSessionId: sessionId });
+      // Return payment details
     return NextResponse.json({ 
       success: true,
       payment: {
@@ -107,7 +90,7 @@ export async function GET(request: Request) {
         currency: checkoutSession.currency?.toUpperCase(),
         status: checkoutSession.payment_status,
         workerName: worker.name,
-        contractId: contract?._id,
+        collaborationId: existingCollaboration?._id,
       }
     }, { status: 200 });
     
