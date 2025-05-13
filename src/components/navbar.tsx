@@ -29,7 +29,7 @@ const navigationItems = [
   { name: "Home", path: "/" },
   { name: "Job Hub", path: "/job-hub" },
   { name: "WorkForce Hub", path: "/workforce-hub" },
-  { name: "Business Hub", path: "/business-hub" },
+  /* { name: "Business Hub", path: "/business-hub" }, */
   { name: "About Us", path: "/about-us" },
 ];
 

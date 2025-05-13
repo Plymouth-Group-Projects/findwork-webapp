@@ -27,6 +27,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Session } from "next-auth"
 import { LogoutButton } from "./auth/logout-button"
+import { Badge } from "@/components/ui/badge"
 
 // Define proper props interface
 interface DashboardSidebarProps {
@@ -36,6 +37,7 @@ interface DashboardSidebarProps {
 export function DashboardSidebar({ session }: DashboardSidebarProps) {
   // Using null as initial state to detect client-side rendering
   const [isMounted, setIsMounted] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
   const pathname = usePathname()
   
   // Use session data if provided, otherwise use sample data
@@ -45,15 +47,43 @@ export function DashboardSidebar({ session }: DashboardSidebarProps) {
     avatar: session?.user?.image || "/avatars/user-placeholder.png",
     role: "Freelancer" // You might want to get this from session in the future
   }
-
+  
+  // Fetch unread notification count
+  useEffect(() => {
+    if (isMounted && session?.user?.id) {
+      const fetchUnreadCount = async () => {
+        try {
+          const response = await fetch('/api/notifications/unread-count');
+          if (response.ok) {
+            const data = await response.json();
+            setUnreadCount(data.count);
+          }
+        } catch (error) {
+          console.error("Error fetching unread count:", error);
+        }
+      };
+      
+      fetchUnreadCount();
+      
+      // Set up interval to check for new notifications
+      const intervalId = setInterval(fetchUnreadCount, 60000); // Check every minute
+      
+      return () => clearInterval(intervalId);
+    }
+  }, [isMounted, session?.user?.id]);
   // Navigation items
   const navigationItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/job-listing", label: "Job Listings", icon: Briefcase},
     { href: "/dashboard/collaboration", label: "Collaborations", icon: Users },
     /* { href: "/dashboard/contracts", label: "Contracts", icon: FileText }, */
-    { href: "/dashboard/finance", label: "Finance", icon: DollarSign },
-    { href: "/dashboard/notifications", label: "Notifications", icon: Bell},
+    /* { href: "/dashboard/finance", label: "Finance", icon: DollarSign }, */
+    { 
+      href: "/dashboard/notifications", 
+      label: "Notifications", 
+      icon: Bell,
+      badge: unreadCount > 0 ? unreadCount : null
+    },
   ]
 
   const bottomNavItems = [
@@ -93,8 +123,7 @@ export function DashboardSidebar({ session }: DashboardSidebarProps) {
         <SidebarGroup>
           <SidebarGroupContent className="px-3">
             <SidebarMenu>
-              {/* Main Navigation Items */}
-              {navigationItems.map((item) => (
+              {/* Main Navigation Items */}              {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.href} className="mb-1">
                   <Link 
                     href={item.href}
@@ -105,8 +134,24 @@ export function DashboardSidebar({ session }: DashboardSidebarProps) {
                         : "text-gray-600 hover:bg-light/10 hover:text-light dark:text-gray-300"
                     )}
                   >
-                    <item.icon className="h-5 w-5" />
-                    <span className="group-data-[state=collapsed]:hidden">{item.label}</span>
+                    <div className="relative">
+                      <item.icon className="h-5 w-5" />
+                      {item.badge && (
+                        <Badge 
+                          className="absolute -right-2 -top-2 h-4 min-w-4 p-0 flex items-center justify-center text-[10px] bg-red-500 text-white"
+                        >
+                          {item.badge > 99 ? '99+' : item.badge}
+                        </Badge>
+                      )}
+                    </div>
+                    <span className="group-data-[state=collapsed]:hidden flex-1">{item.label}</span>
+                    {item.badge && (
+                      <Badge 
+                        className="group-data-[state=collapsed]:hidden h-5 bg-red-500 text-white text-xs"
+                      >
+                        {item.badge > 99 ? '99+' : item.badge}
+                      </Badge>
+                    )}
                   </Link>
                 </SidebarMenuItem>
               ))}

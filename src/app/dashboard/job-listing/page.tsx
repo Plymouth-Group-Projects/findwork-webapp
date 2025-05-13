@@ -303,7 +303,8 @@ export default function JobListingPage() {
                         <Badge variant="secondary">{job.applicantCount}</Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex justify-end space-x-2">                          <Button 
+                        <div className="flex justify-end space-x-2">                          
+                          <Button 
                             variant="ghost" 
                             size="sm" 
                             className="h-8 w-8 p-0"

@@ -144,6 +144,50 @@ export default async function DashboardPage() {
     );
   }
 
+  // Placeholder notifications for when there are no data from the API
+  const placeholderNotifications = [
+    {
+      _id: 'placeholder-1',
+      title: 'Job application received',
+      message: 'Your application for "Senior Frontend Developer" has been received and is under review.',
+      type: 'application',
+      read: false,
+      createdAt: new Date().toISOString()
+    },
+    {
+      _id: 'placeholder-2',
+      title: 'New message from client',
+      message: 'You have received a new message regarding the "Website Redesign" project.',
+      type: 'message',
+      read: true,
+      createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() // 1 day ago
+    },
+    {
+      _id: 'placeholder-3',
+      title: 'Payment received',
+      message: 'Payment of $750 for "Logo Design" project has been processed successfully.',
+      type: 'payment',
+      read: false,
+      createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString() // 2 days ago
+    },
+    {
+      _id: 'placeholder-4',
+      title: 'Contract proposal',
+      message: 'You have received a contract proposal for the "Mobile App Development" project.',
+      type: 'contract',
+      read: false,
+      createdAt: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString() // 3 days ago
+    },
+    {
+      _id: 'placeholder-5',
+      title: 'New job opportunity',
+      message: 'A new job matching your skills has been posted: "UI/UX Designer for E-commerce Platform"',
+      type: 'job',
+      read: true,
+      createdAt: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString() // 4 days ago
+    }
+  ];
+
   // Destructure the data for easy access
   const { stats, recentActivity, upcomingMilestones } = dashboardData;
   const userRole = stats.profile.role;
@@ -384,7 +428,7 @@ export default async function DashboardPage() {
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <Link href="/dashboard/contracts" className="w-full block">
+             {/*  <Link href="/dashboard/contracts" className="w-full block">
                 <Button variant="outline" className="w-full justify-between border-darker">
                   <div className="flex items-center">
                     <DollarSign className="h-4 w-4 mr-2" />
@@ -392,13 +436,13 @@ export default async function DashboardPage() {
                   </div>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-              </Link>
+              </Link> */}
             </CardContent>
           </Card>
         </div>
 
         {/* Upcoming Milestones from Contracts */}
-        <Card className="border-0 shadow-md bg-white mb-6">
+        {/* <Card className="border-0 shadow-md bg-white mb-6">
           <CardHeader className="bg-white rounded-t-lg border-b border-light/50 flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-darker">Upcoming Milestones</CardTitle>
@@ -438,71 +482,180 @@ export default async function DashboardPage() {
                 </Button>
             </Link>
           </CardFooter>
-        </Card>
-
-        {/* Notifications Feed */}
+        </Card> */}        {/* Notifications Feed */}
         <Card className="border-0 shadow-md bg-white">
-          <CardHeader className="bg-white rounded-t-lg border-b border-light/50 flex flex-row items-center justify-between">
-            <div>
+          <CardHeader className="bg-white rounded-t-lg border-b border-light/50 flex flex-row items-center justify-between">            <div>
               <CardTitle className="text-darker">Recent Notifications</CardTitle>
               <CardDescription className="text-darker/70">Stay updated with the latest information</CardDescription>
             </div>
-            <Badge className="bg-red-500 text-white">{stats.notifications.unread} new</Badge>
-          </CardHeader>
-          <CardContent className="pt-5">
+            {/* Show unread notification count or placeholder count if no real notifications */}
+            {((dashboardData.notifications && dashboardData.notifications.some((n: any) => !n.read)) || 
+              (!dashboardData.notifications || dashboardData.notifications.length === 0) && 
+               placeholderNotifications.some(n => !n.read)) && (
+              <Badge className="bg-red-500 text-white">
+                {(dashboardData.notifications && dashboardData.notifications.length > 0) 
+                  ? stats.notifications.unread 
+                  : placeholderNotifications.filter(n => !n.read).length} new
+              </Badge>
+            )}
+          </CardHeader>          <CardContent className="pt-5">
             <div className="space-y-4">
-              {dashboardData.notifications && dashboardData.notifications.length > 0 ? (
+              {/* Display real notifications or placeholders */}
+              {(dashboardData.notifications && dashboardData.notifications.length > 0) ? (
                 dashboardData.notifications.map((notification: any, index: number) => {
                   // Select icon based on notification type
                   let Icon = Bell;
                   let bgColor = "bg-blue-100";
                   let iconColor = "text-blue-600";
-                  
+                  let href = "/dashboard/notifications";
+
                   if (notification.type === 'application') {
                     Icon = Briefcase;
                     bgColor = "bg-blue-100";
                     iconColor = "text-blue-600";
+                    // If there's a relatedId, we can link to the application
+                    href = notification.relatedId 
+                      ? `/dashboard/job-listing/applications/${notification.relatedId}` 
+                      : "/dashboard/job-listing";
                   } else if (notification.type === 'job') {
                     Icon = FileText;
                     bgColor = "bg-emerald-100";
                     iconColor = "text-emerald-600";
+                    // If there's a relatedId, we can link to the job
+                    href = notification.relatedId 
+                      ? `/job-hub/${notification.relatedId}` 
+                      : "/job-hub";
                   } else if (notification.type === 'contract') {
                     Icon = FileText;
                     bgColor = "bg-amber-100";
                     iconColor = "text-amber-600";
+                    href = notification.relatedId 
+                      ? `/dashboard/contracts/${notification.relatedId}` 
+                      : "/dashboard/contracts";
                   } else if (notification.type === 'payment') {
                     Icon = DollarSign;
                     bgColor = "bg-purple-100";
                     iconColor = "text-purple-600";
+                    href = "/dashboard/contracts";
+                  } else if (notification.type === 'message') {
+                    Icon = Calendar;
+                    bgColor = "bg-green-100";
+                    iconColor = "text-green-600";
+                    href = "/dashboard/notifications";
                   } else {
                     Icon = Bell;
                     bgColor = "bg-gray-100";
                     iconColor = "text-gray-600";
+                    href = "/dashboard/notifications";
                   }
                   
                   // For unread notifications, add a highlight
                   const isUnread = !notification.read;
                   
                   return (
-                    <div
+                    <Link 
+                      href={href}
                       key={`notification-${index}`}
-                      className={`flex items-center gap-4 rounded-md border border-light p-3 hover:bg-lightest/30 transition-colors ${isUnread ? 'bg-blue-50' : ''}`}
+                      className="block"
                     >
-                      <div className={`rounded-full ${bgColor} p-2`}>
-                        <Icon className={`h-4 w-4 ${iconColor}`} />
+                      <div
+                        className={`flex items-center gap-4 rounded-md border border-light p-3 hover:bg-lightest/30 transition-colors ${isUnread ? 'bg-blue-50' : ''}`}
+                      >
+                        <div className={`rounded-full ${bgColor} p-2`}>
+                          <Icon className={`h-4 w-4 ${iconColor}`} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between">
+                            <p className="text-sm font-medium text-darker">{notification.title}</p>
+                            {isUnread && (
+                              <span className="ml-2 w-2 h-2 rounded-full bg-red-500 mt-1.5"></span>
+                            )}
+                          </div>
+                          <p className="text-xs text-darker/70 line-clamp-2">{notification.message}</p>
+                        </div>
+                        <div className="text-xs text-darker/70 whitespace-nowrap">
+                          <RelativeDate date={notification.createdAt} />
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-darker">{notification.title}</p>
-                        <p className="text-xs text-darker/70">{notification.message}</p>
+                    </Link>
+                  );                })
+              ) : placeholderNotifications && placeholderNotifications.length > 0 ? (
+                // Display placeholder notifications when no real ones exist
+                placeholderNotifications.slice(0, 5).map((notification, index) => {
+                  // Select icon based on notification type
+                  let Icon = Bell;
+                  let bgColor = "bg-blue-100";
+                  let iconColor = "text-blue-600";
+                  let href = "/dashboard/notifications";
+
+                  if (notification.type === 'application') {
+                    Icon = Briefcase;
+                    bgColor = "bg-blue-100";
+                    iconColor = "text-blue-600";
+                    href = "/dashboard/job-listing";
+                  } else if (notification.type === 'job') {
+                    Icon = FileText;
+                    bgColor = "bg-emerald-100";
+                    iconColor = "text-emerald-600";
+                    href = "/job-hub";
+                  } else if (notification.type === 'contract') {
+                    Icon = FileText;
+                    bgColor = "bg-amber-100";
+                    iconColor = "text-amber-600";
+                    href = "/dashboard/contracts";
+                  } else if (notification.type === 'payment') {
+                    Icon = DollarSign;
+                    bgColor = "bg-purple-100";
+                    iconColor = "text-purple-600";
+                    href = "/dashboard/contracts";
+                  } else if (notification.type === 'message') {
+                    Icon = Calendar;
+                    bgColor = "bg-green-100";
+                    iconColor = "text-green-600";
+                    href = "/dashboard/notifications";
+                  } else {
+                    Icon = Bell;
+                    bgColor = "bg-gray-100";
+                    iconColor = "text-gray-600";
+                    href = "/dashboard/notifications";
+                  }
+                  
+                  // For unread notifications, add a highlight
+                  const isUnread = !notification.read;
+                  
+                  return (
+                    <Link 
+                      href={href}
+                      key={`notification-placeholder-${index}`}
+                      className="block"
+                    >
+                      <div
+                        className={`flex items-center gap-4 rounded-md border border-light p-3 hover:bg-lightest/30 transition-colors ${isUnread ? 'bg-blue-50' : ''}`}
+                      >
+                        <div className={`rounded-full ${bgColor} p-2`}>
+                          <Icon className={`h-4 w-4 ${iconColor}`} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between">
+                            <p className="text-sm font-medium text-darker">{notification.title}</p>
+                            {isUnread && (
+                              <span className="ml-2 w-2 h-2 rounded-full bg-red-500 mt-1.5"></span>
+                            )}
+                          </div>
+                          <p className="text-xs text-darker/70 line-clamp-2">{notification.message}</p>
+                        </div>
+                        <div className="text-xs text-darker/70 whitespace-nowrap">
+                          <RelativeDate date={notification.createdAt} />
+                        </div>
                       </div>
-                      <div className="text-xs text-darker/70">
-                        <RelativeDate date={notification.createdAt} />
-                      </div>
-                    </div>
+                    </Link>
                   );
                 })
               ) : (
-                <p className="text-center py-4 text-darker/70">No notifications</p>
+                <div className="text-center py-8">
+                  <Bell className="h-10 w-10 mx-auto text-gray-300 mb-3" />
+                  <p className="text-darker/70">No notifications</p>
+                </div>
               )}
             </div>
           </CardContent>
