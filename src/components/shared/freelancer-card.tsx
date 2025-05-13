@@ -42,7 +42,7 @@ export default function FreelancerCard({ freelancer, isActive, index }: Freelanc
   return (
     <Card
       className={`
-      h-[500px] bg-white border-none text-darker
+      h-[530px] bg-white border-none text-darker
       transition-all duration-300 ease-in-out
       ${
         isActive

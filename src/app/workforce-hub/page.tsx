@@ -268,7 +268,7 @@ export default function WorkForceHub() {
                 <div className="flex flex-wrap gap-2 mb-6">
                   <div className="text-sm font-medium mr-2 my-auto">Active filters:</div>
                   {category && (
-                    <div className="bg-light/20 text-darker text-xs py-1 px-3 rounded-full flex items-center">
+                    <div className="bg-light/20 text-white text-xs py-1 px-3 rounded-full flex items-center">
                       Category: {category}
                       <Button 
                         variant="ghost" 

@@ -6,6 +6,8 @@ import { authOptions } from "@/lib/auth";
 import { ConnectToDatabase } from "@/lib/mongoose";
 import mongoose from "mongoose";
 import { Notification } from "@/models/notification";
+import { NotificationService } from "@/lib/api/notification-service";
+import { User } from "@/models/user";
 
 // Type definition for request body when creating a notification
 interface CreateNotificationBody {
@@ -21,11 +23,10 @@ interface MarkReadBody {
 }
 
 // GET handler - Fetch notifications for the current user
-export async function GET(request: NextRequest) {
-  try {
+export async function GET(request: NextRequest) {  try {
     // Check authentication
     const session = await getServerSession(authOptions);
-    if (!session || !session.user || !session.user.id) {
+    if (!session || !session.user || !session.user.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -35,6 +36,20 @@ export async function GET(request: NextRequest) {
     // Connect to the database
     await ConnectToDatabase();
     
+    // Find the user in the database using the email from session
+    const userEmail = session.user.email;
+    
+    const dbUser = await User.findOne({ email: userEmail });
+    if (!dbUser) {
+      return NextResponse.json(
+        { error: "User not found in database" },
+        { status: 404 }
+      );
+    }
+    
+    // Use the MongoDB ObjectId from the database
+    const userObjectId = dbUser._id;
+    
     // Parse URL parameters for pagination
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("page") || "1");
@@ -43,11 +58,10 @@ export async function GET(request: NextRequest) {
     const unreadOnly = url.searchParams.get("unread") === "true";
     
     // Build the query
-    const query: any = { userId: new mongoose.Types.ObjectId(session.user.id) };
+    const query: any = { userId: userObjectId };
     if (unreadOnly) {
       query.read = false;
     }
-    
     // Fetch notifications with pagination
     const notifications = await Notification
       .find(query)
@@ -57,10 +71,9 @@ export async function GET(request: NextRequest) {
     
     // Get total count for pagination
     const total = await Notification.countDocuments(query);
-    
-    // Calculate unread count
+      // Calculate unread count
     const unreadCount = await Notification.countDocuments({ 
-      userId: new mongoose.Types.ObjectId(session.user.id),
+      userId: userObjectId,
       read: false
     });
     
@@ -85,11 +98,10 @@ export async function GET(request: NextRequest) {
 }
 
 // POST handler - Create a notification
-export async function POST(request: NextRequest) {
-  try {
+export async function POST(request: NextRequest) {  try {
     // Check authentication - only allow admins or system to create notifications
     const session = await getServerSession(authOptions);
-    if (!session || !session.user || !session.user.id) {
+    if (!session || !session.user || !session.user.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -98,6 +110,20 @@ export async function POST(request: NextRequest) {
     
     // Connect to the database
     await ConnectToDatabase();
+    
+    // Find the user in the database using the email from session
+    const userEmail = session.user.email;
+    
+    const dbUser = await User.findOne({ email: userEmail });
+    if (!dbUser) {
+      return NextResponse.json(
+        { error: "User not found in database" },
+        { status: 404 }
+      );
+    }
+    
+    // Use the MongoDB ObjectId from the database
+    const userObjectId = dbUser._id;
     
     // Parse the request body
     const data = await request.json() as CreateNotificationBody;
@@ -113,7 +139,7 @@ export async function POST(request: NextRequest) {
     
     // Create the notification
     const notification = new Notification({
-      userId: new mongoose.Types.ObjectId(session.user.id),
+      userId: userObjectId,
       title,
       message,
       type,
@@ -140,11 +166,10 @@ export async function POST(request: NextRequest) {
 }
 
 // PATCH handler - Mark notifications as read
-export async function PATCH(request: NextRequest) {
-  try {
+export async function PATCH(request: NextRequest) {  try {
     // Check authentication
     const session = await getServerSession(authOptions);
-    if (!session || !session.user || !session.user.id) {
+    if (!session || !session.user || !session.user.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -153,6 +178,20 @@ export async function PATCH(request: NextRequest) {
     
     // Connect to the database
     await ConnectToDatabase();
+    
+    // Find the user in the database using the email from session
+    const userEmail = session.user.email;
+    
+    const dbUser = await User.findOne({ email: userEmail });
+    if (!dbUser) {
+      return NextResponse.json(
+        { error: "User not found in database" },
+        { status: 404 }
+      );
+    }
+    
+    // Use the MongoDB ObjectId from the database
+    const userObjectId = dbUser._id;
     
     // Parse the request body
     const data = await request.json() as MarkReadBody;
@@ -172,7 +211,7 @@ export async function PATCH(request: NextRequest) {
     const result = await Notification.updateMany(
       { 
         _id: { $in: objectIds },
-        userId: new mongoose.Types.ObjectId(session.user.id) // Security: ensure user only updates their own notifications
+        userId: userObjectId // Security: ensure user only updates their own notifications
       },
       { $set: { read: true } }
     );

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { SlArrowRight } from "react-icons/sl";
 
 interface JobOpportunity {
-  id: number;
+  id: string | number;
   imageUrl: string;
   title: string;
   employementType: string;
@@ -26,6 +26,7 @@ interface JobOpportunity {
 interface JobCardProps {
   opportunity: JobOpportunity;
   isActive: boolean;
+  onClick?: () => void;
 }
 
 const getDaysLeft = (deadline: string) => {
@@ -36,14 +37,16 @@ const getDaysLeft = (deadline: string) => {
   return daysLeft;
 };
 
-export default function JobCard({ opportunity, isActive }: JobCardProps) {
+export default function JobCard({ opportunity, isActive, onClick }: JobCardProps) {
   return (
     <Card
       className={`
         h-[400px] bg-white border-none text-darker
         transition-all duration-300 ease-in-out grid grid-cols-6
+        cursor-pointer
         ${isActive ? "scale-100 opacity-100" : "scale-90 opacity-50 blur-[2px]"}
       `}
+      onClick={onClick}
     >
       <div className="col-span-2 rounded-s-xl relative h-full">
         <Image
@@ -83,21 +86,22 @@ export default function JobCard({ opportunity, isActive }: JobCardProps) {
                 ? `${getDaysLeft(opportunity.deadline)} days left`
                 : "Deadline passed"}
             </p>
-          </CardDescription>
-          <a href="#">
-            <Button
-              className={`absolute bottom-5 font-medium bg-light text-white hover:bg-lightest hover:text-darker
-                transition-all duration-300 group px-6
-                ${isActive ? "opacity-100" : "opacity-0"}
-              `}
-            >
-              <span className="my-auto transition-transform group-hover:translate-x-1 duration-300">Apply Now</span>
-              <SlArrowRight 
-                className="ml-2 mt-[2px] transition-transform duration-300 group-hover:translate-x-1" 
-                size={8} 
-              />
-            </Button>
-          </a>
+          </CardDescription>          <Button
+            className={`absolute bottom-5 font-medium bg-light text-white hover:bg-lightest hover:text-darker
+              transition-all duration-300 group px-6
+              ${isActive ? "opacity-100" : "opacity-0"}
+            `}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent the card click event from firing
+              if (onClick) onClick();
+            }}
+          >
+            <span className="my-auto transition-transform group-hover:translate-x-1 duration-300">Apply Now</span>
+            <SlArrowRight 
+              className="ml-2 mt-[2px] transition-transform duration-300 group-hover:translate-x-1" 
+              size={8} 
+            />
+          </Button>
         </CardContent>
       </div>
     </Card>
