@@ -4,12 +4,13 @@ import { Job } from "@/models/job";
 import mongoose from "mongoose";
 
 interface Params {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export async function GET(request: NextRequest, { params }: Params) {
+export async function GET(request: NextRequest, props: Params) {
+  const params = await props.params;
   try {
     // Connect to the database
     await ConnectToDatabase();
@@ -49,7 +50,8 @@ export async function GET(request: NextRequest, { params }: Params) {
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: Params) {
+export async function PATCH(request: NextRequest, props: Params) {
+  const params = await props.params;
   try {
     // Connect to the database
     await ConnectToDatabase();
@@ -96,7 +98,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: Params) {
+export async function DELETE(request: NextRequest, props: Params) {
+  const params = await props.params;
   try {
     // Connect to the database
     await ConnectToDatabase();

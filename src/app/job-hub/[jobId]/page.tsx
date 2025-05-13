@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -21,10 +21,11 @@ import { SlArrowLeft, SlArrowRight, SlCalender, SlLocationPin, SlBriefcase, SlGr
 import { FaBuilding, FaDollarSign, FaRegMoneyBillAlt } from 'react-icons/fa';
 import Footer from '@/components/footer';
 
-export default function JobDetailsPage({ params }: { params: { jobId: string } }) {
+export default function JobDetailsPage(props: { params: Promise<{ jobId: string }> }) {
+  const params = use(props.params);
   const { jobId } = params;
   const router = useRouter();
-  
+
   const [job, setJob] = useState<IJob | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -165,7 +166,7 @@ export default function JobDetailsPage({ params }: { params: { jobId: string } }
 
         {loading ? (
           // Loading skeleton
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          (<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="col-span-1 md:col-span-2">
               <Card>
                 <CardHeader>
@@ -198,10 +199,10 @@ export default function JobDetailsPage({ params }: { params: { jobId: string } }
                 </CardContent>
               </Card>
             </div>
-          </div>
+          </div>)
         ) : error ? (
           // Error state
-          <Card className="bg-red-50 text-center p-8">
+          (<Card className="bg-red-50 text-center p-8">
             <CardContent>
               <div className="flex flex-col items-center gap-4">
                 <h2 className="text-xl font-bold text-red-600">Error Loading Job</h2>
@@ -215,10 +216,10 @@ export default function JobDetailsPage({ params }: { params: { jobId: string } }
                 </Button>
               </div>
             </CardContent>
-          </Card>
+          </Card>)
         ) : job ? (
           // Job details content
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          (<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Main Job Details */}
             <div className="col-span-1 md:col-span-2">
               <Card className="shadow-sm bg-white text-darker">
@@ -292,7 +293,6 @@ export default function JobDetailsPage({ params }: { params: { jobId: string } }
                 </CardContent>
               </Card>
             </div>
-            
             {/* Sidebar with Job Details and Apply Button */}
             <div className="col-span-1">
               <Card className="shadow-sm sticky bg-white text-darker top-24">
@@ -419,10 +419,10 @@ export default function JobDetailsPage({ params }: { params: { jobId: string } }
                 </CardFooter>
               </Card>
             </div>
-          </div>
+          </div>)
         ) : (
           // No job found
-          <Card className="text-center p-8">
+          (<Card className="text-center p-8">
             <CardContent>
               <div className="flex flex-col items-center gap-4">
                 <h2 className="text-xl font-bold">Job Not Found</h2>
@@ -435,7 +435,7 @@ export default function JobDetailsPage({ params }: { params: { jobId: string } }
                 </Button>
               </div>
             </CardContent>
-          </Card>
+          </Card>)
         )}
         
         {/* Related Jobs Section - This could be implemented later */}
@@ -448,7 +448,6 @@ export default function JobDetailsPage({ params }: { params: { jobId: string } }
           </div>
         )}
       </div>
-      
       {/* Footer */}
       <div className="mt-16">
         <Footer />
