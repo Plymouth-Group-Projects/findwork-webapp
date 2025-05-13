@@ -6,10 +6,8 @@ import { authOptions } from '@/lib/auth';
 import mongoose from 'mongoose';
 
 // GET: Fetch a job by ID
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await ConnectToDatabase();
     const session = await getServerSession(authOptions);
@@ -55,10 +53,8 @@ export async function GET(
 }
 
 // PUT: Update a job completely
-export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await ConnectToDatabase();
     const session = await getServerSession(authOptions);
@@ -123,10 +119,8 @@ export async function PUT(
 }
 
 // PATCH: Update specific fields of a job
-export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await ConnectToDatabase();
     const session = await getServerSession(authOptions);
@@ -191,10 +185,8 @@ export async function PATCH(
 }
 
 // DELETE: Remove a job
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await ConnectToDatabase();
     const session = await getServerSession(authOptions);
