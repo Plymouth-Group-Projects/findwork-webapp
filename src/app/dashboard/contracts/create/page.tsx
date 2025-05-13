@@ -102,9 +102,8 @@ export default function CreateContractPage() {
     description: '',
     freelancerId: '',
     freelancerName: '',
-    startDate: new Date(),
-    paymentAmount: 0,
-    currency: 'USD',
+    startDate: new Date(),    paymentAmount: 0,
+    currency: 'LKR',
     paymentTerms: 'Payment will be processed upon completion of all deliverables.',
     milestones: [
       {
@@ -460,8 +459,8 @@ export default function CreateContractPage() {
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select currency" />
                                 </SelectTrigger>
-                              </FormControl>
-                              <SelectContent className='bg-white text-darker'>
+                              </FormControl>                              <SelectContent className='bg-white text-darker'>
+                                <SelectItem value="LKR">LKR - Sri Lankan Rupee</SelectItem>
                                 <SelectItem value="USD">USD - US Dollar</SelectItem>
                                 <SelectItem value="EUR">EUR - Euro</SelectItem>
                                 <SelectItem value="GBP">GBP - British Pound</SelectItem>
@@ -507,14 +506,13 @@ export default function CreateContractPage() {
                             <Info className="h-5 w-5 text-light" />
                             <p>Break down the contract into milestones with specific deliverables and payment amounts. The sum of milestone amounts should equal the total contract value.</p>
                           </div>
-                          <div className="mt-2 p-3 bg-light/10 rounded-md">
-                            <div className="flex justify-between">
+                          <div className="mt-2 p-3 bg-light/10 rounded-md">                            <div className="flex justify-between">
                               <span>Total milestone amount:</span>
-                              <span className="font-semibold">${calculateTotal()}</span>
+                              <span className="font-semibold">Rs. {calculateTotal()}</span>
                             </div>
                             <div className="flex justify-between">
                               <span>Contract total:</span>
-                              <span className="font-semibold">${form.getValues('paymentAmount')}</span>
+                              <span className="font-semibold">Rs. {form.getValues('paymentAmount')}</span>
                             </div>
                           </div>
                         </div>

@@ -263,7 +263,7 @@ export default function ProfilePage() {
               <TabsList className="grid w-full grid-cols-2 bg-muted/30 p-1 bg-white/60">
                 <TabsTrigger 
                   value="personal" 
-                  className="data-[state=active]:bg-white bg-dark data-[state=active]:text-darker data-[state=active]:shadow-sm"
+                  className="data-[state=active]:bg-white data-[state=active]:text-darker data-[state=active]:shadow-sm"
                 >
                   Personal Information
                 </TabsTrigger>

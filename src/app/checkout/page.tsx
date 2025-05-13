@@ -12,11 +12,15 @@ import { IWorkerProfile } from "@/models/freelance-collab";
 import { toast } from "@/hooks/use-toast";
 
 export default function CheckoutPage() {
-  const [worker, setWorker] = useState<IWorkerProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [worker, setWorker] = useState<IWorkerProfile | null>(null);  const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
+  
+  // We're not using actual conversion, just changing the display symbol
+  const convertToLKR = (amount: number) => {
+    return amount.toFixed(2);
+  };
   
   const workerId = searchParams.get('workerId');
   
@@ -54,13 +58,10 @@ export default function CheckoutPage() {
     };
     
     fetchWorker();
-  }, [workerId, router]);
-  
-  const proceedToPayment = async () => {
+  }, [workerId, router]);    const proceedToPayment = async () => {
     if (!worker) return;
     
-    setProcessing(true);
-    try {
+    setProcessing(true);    try {
       // Extract price from salary string
       const priceMatch = worker.salary.match(/\$?(\d+)/);
       const price = priceMatch ? parseFloat(priceMatch[1]) : 0;
@@ -74,6 +75,7 @@ export default function CheckoutPage() {
           workerId: worker._id,
           workerName: worker.name,
           price: price,
+          currency: 'LKR',
           description: `Hiring ${worker.name} for ${worker.category || 'services'}`,
         }),
       });
@@ -81,6 +83,7 @@ export default function CheckoutPage() {
       const data = await response.json();
       
       if (data.success && data.url) {
+        // On successful checkout creation, redirect to Stripe checkout
         window.location.href = data.url;
       } else {
         toast({
@@ -168,10 +171,14 @@ export default function CheckoutPage() {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Service Type</span>
                     <span className="font-medium">{worker.category}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Rate</span>
-                    <span className="font-medium">{worker.salary}</span>
+                  </div>                  <div className="flex justify-between">
+                    <span className="text-gray-600">Rate</span>                    <span className="font-medium">
+                      {(() => {
+                        const priceMatch = worker.salary.match(/\$?(\d+)/);
+                        const price = priceMatch ? parseFloat(priceMatch[1]) : 0;
+                        return `LKR ${convertToLKR(price)}`;
+                      })()}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Skills</span>
@@ -212,25 +219,31 @@ export default function CheckoutPage() {
             <Card className="bg-white">
               <CardHeader>
                 <CardTitle>Payment Summary</CardTitle>
-              </CardHeader>
+              </CardHeader>              
               <CardContent>
-                <div className="space-y-3">
+                <div className="space-y-3">                  
                   <div className="flex justify-between">
                     <span className="text-gray-600">Service Rate</span>
-                    <span>{worker.salary}</span>
-                  </div>
+                    <span>
+                      {(() => {
+                        const priceMatch = worker.salary.match(/\$?(\d+)/);
+                        const price = priceMatch ? parseFloat(priceMatch[1]) : 0;
+                        return `LKR ${convertToLKR(price)}`;
+                      })()}
+                    </span>
+                  </div>                  
                   <div className="flex justify-between">
                     <span className="text-gray-600">Service Fee</span>
-                    <span>$5.00</span>
+                    <span>LKR {convertToLKR(5)}</span>
                   </div>
-                  <Separator className="my-3" />
+                  <Separator className="my-3" />                  
                   <div className="flex justify-between font-bold">
                     <span>Total</span>
                     <span>
-                      ${(() => {
+                      LKR {(() => {
                         const priceMatch = worker.salary.match(/\$?(\d+)/);
                         const price = priceMatch ? parseFloat(priceMatch[1]) : 0;
-                        return (price + 5).toFixed(2);
+                        return convertToLKR(price + 5);
                       })()}
                     </span>
                   </div>

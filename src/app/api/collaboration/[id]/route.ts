@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ConnectToDatabase } from "@/lib/mongoose";
 import { WorkerProfile } from "@/models/freelance-collab";
+import { HiredCollaboration } from "@/models/hired-collab";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-// GET /api/collaboration/[id] - Get a specific collaboration by ID
+// GET /api/collaboration/[id] - Get a specific collaboration by ID (could be a WorkerProfile or HiredCollaboration)
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   try {
@@ -20,29 +21,36 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
       );
     }
     
-    const collaboration = await WorkerProfile.findById(id);
+    // First, check if this is a regular WorkerProfile
+    let collaboration = await WorkerProfile.findById(id);
+    let isHiredCollaboration = false;
+    
+    // If not found, check if it's a HiredCollaboration
+    if (!collaboration) {
+      collaboration = await HiredCollaboration.findById(id);
+      isHiredCollaboration = true;
+    }
     
     if (!collaboration) {
       return NextResponse.json(
         { error: "Collaboration not found" },
         { status: 404 }
       );
-    }
-
-    // Get user information for this profile
+    }    // Get user information for this profile
     const User = mongoose.models.User;
-    const user = await User.findById(collaboration.userId).select("name email profilePicture address");
+    const user = await User.findById(collaboration.userId).select("firstName lastName email image address");
     
-    // Map WorkerProfile fields directly matching the database structure
+    // Map fields directly matching the database structure
     const profile = collaboration.toObject();
     
     // Return profile data with minimal transformations to match the database structure
     return NextResponse.json({
       ...profile,
+      isHiredCollaboration,
       userInfo: user ? {
-        name: user.name,
+        name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : (user.firstName || "User"),
         email: user.email,
-        profilePicture: user.profilePicture,
+        profilePicture: user.image,
         address: user.address
       } : null
     });

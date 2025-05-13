@@ -19,7 +19,7 @@ interface PaymentDetails {
   currency: string;
   status: string;
   workerName: string;
-  contractId?: string;
+  collaborationId?: string;
 }
 
 export default function CollaborationSuccessPage() {
@@ -28,7 +28,6 @@ export default function CollaborationSuccessPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
-
   useEffect(() => {
     const verifyPayment = async () => {
       if (!sessionId) {
@@ -37,25 +36,58 @@ export default function CollaborationSuccessPage() {
       }
 
       try {
-        const response = await fetch(`/api/checkout/verify?session_id=${sessionId}`);
-        const data = await response.json();
+        // First verify the payment
+        const verifyResponse = await fetch(`/api/checkout/verify?session_id=${sessionId}`);
+        const verifyData = await verifyResponse.json();
 
-        if (data.success) {
-          setPaymentDetails(data.payment);
-        } else {
-          console.error("Payment verification failed:", data.error);
+        if (!verifyData.success) {
+          console.error("Payment verification failed:", verifyData.error);
           toast({
             variant: "destructive",
             title: "Verification Failed",
-            description: data.error || "Unable to verify payment status.",
+            description: verifyData.error || "Unable to verify payment status.",
           });
+          setLoading(false);
+          return;
+        }
+
+        setPaymentDetails(verifyData.payment);
+
+        // Then create the hired collaboration record
+        const successResponse = await fetch('/api/checkout/success', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sessionId,
+          }),
+        });
+        
+        const successData = await successResponse.json();
+        
+        if (!successData.success) {
+          console.error("Failed to create collaboration record:", successData.error);
+          toast({
+            variant: "destructive",
+            title: "Collaboration Creation Failed",
+            description: successData.error || "Unable to create collaboration record.",
+          });
+        } else {
+          console.log("Collaboration record created successfully:", successData.message);          // Store the collaboration ID in the payment details for access in UI
+          if (verifyData.payment) {
+            setPaymentDetails({
+              ...verifyData.payment,
+              collaborationId: successData.collabId
+            });
+          }
         }
       } catch (error) {
-        console.error("Error verifying payment:", error);
+        console.error("Error processing payment completion:", error);
         toast({
           variant: "destructive",
           title: "Error",
-          description: "An unexpected error occurred while verifying payment.",
+          description: "An unexpected error occurred while processing payment completion.",
         });
       } finally {
         setLoading(false);
@@ -182,9 +214,14 @@ export default function CollaborationSuccessPage() {
               </div>
             </div>
             
-            <div className="flex flex-col gap-4">
-              <Button 
-                onClick={() => router.push('/dashboard/collaboration')}
+            <div className="flex flex-col gap-4">              <Button 
+                onClick={() => {
+                  if (paymentDetails?.collaborationId) {
+                    router.push(`/dashboard/collaboration/${paymentDetails.collaborationId}`);
+                  } else {
+                    router.push('/dashboard/collaboration?tab=hired-collabs');
+                  }
+                }}
                 className="bg-light hover:bg-lightest hover:text-darker flex items-center justify-center"
               >
                 <File className="mr-2 h-4 w-4" />
