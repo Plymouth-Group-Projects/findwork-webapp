@@ -109,7 +109,7 @@ export default function TopCompanies() {
 		},
 	];
 	return (
-		<div>
+		{/* <div>
 			<div>
 				<div className="container mx-auto max-w-[1400px]">
 					<h2 className="text-center tracking-widest text-4xl font-semibold font-lato mt-36 mb-10">
@@ -148,6 +148,6 @@ export default function TopCompanies() {
 					onIndicatorClick={handlePaginationClick}
 				/>
 			</div>
-		</div>
+		</div> */}
 	);
 }

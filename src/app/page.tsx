@@ -16,7 +16,6 @@ export default function Home() {
 			<Categories />
 			<LatestJobSection />
 			<TopFreelancers />
-			<TopCompanies />
 			<ContactUs />
 			<Footer />
 		</>
