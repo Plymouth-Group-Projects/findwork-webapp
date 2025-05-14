@@ -31,7 +31,7 @@ export default function AboutUs() {
               <Image 
                 src="/mission.svg" 
                 alt="Our Mission" 
-                width={500} 
+                width={600} 
                 height={400}
                 className="rounded-lg mx-auto md:mx-0" 
               />
